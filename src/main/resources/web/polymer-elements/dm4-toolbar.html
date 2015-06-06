@@ -1,10 +1,19 @@
-<link rel="import" href="../lib/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="dm4-toolbar">
+    <style>
+        :host {
+            display: block;
+            background-color: lightgray;
+        }
+    </style>
+    <template>
+        An experimental DeepaMehta webclient based on Polymer!
+    </template>
+</dom-module>
 
 <script>
-  Polymer({
-    is: "dm4-toolbar",
-    ready: function() {
-      this.innerHTML = "An experimental DeepaMehta webclient based on Polymer!"
-    }
-  });
+    Polymer({
+        is: "dm4-toolbar"
+    });
 </script>

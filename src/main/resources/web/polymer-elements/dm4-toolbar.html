@@ -1,4 +1,8 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
 
 <dom-module id="dm4-toolbar">
     <style>
@@ -9,6 +13,16 @@
     </style>
     <template>
         An experimental DeepaMehta webclient based on Polymer!
+        <iron-ajax auto url="http://localhost:8080/core/topic/by_type/dm4.topicmaps.topicmap"
+            headers='{"Content-Type": "application/json"}' last-response="{{ajaxResponse}}">
+        </iron-ajax>
+        <h1>Public Topicmaps</h1>
+        <paper-menu>
+            <template is="dom-repeat" items="[[ajaxResponse.items]]">
+                <paper-item>{{item.value}}</paper-item>
+            </template>
+        </paper-menu>
+        <paper-button>Button</paper-button>
     </template>
 </dom-module>
 

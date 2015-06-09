@@ -1,0 +1,25 @@
+{
+  "name": "dm4-webclient-polymer",
+  "version": "0.1-SNAPSHOT",
+  "homepage": "https://github.com/jri/dm4-webclient-polymer",
+  "authors": [
+    "Jörg Richter <jri@deepamehta.de>"
+  ],
+  "description": "An experimental DeepaMehta webclient based on Polymer",
+  "main": "index.html",
+  "license": "GPL3",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~1.0.3",
+    "iron-ajax": "PolymerElements/iron-ajax#~1.0.1",
+    "paper-button": "PolymerElements/paper-button#~1.0.1",
+    "paper-menu": "PolymerElements/paper-menu#~1.0.0",
+    "paper-item": "PolymerElements/paper-item#~1.0.1"
+  }
+}

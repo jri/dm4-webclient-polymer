@@ -1,0 +1,43 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+
+<dom-module id="dm4-dropdown-menu">
+    <style>
+        paper-button[active] {
+            background-color: rgba(0, 0, 0, 0.25);
+        }
+        paper-menu {
+            display: none;
+            position: absolute;
+            border: 1px solid lightgray;
+        }
+    </style>
+    <template>
+        <paper-button id="button" raised toggles on-tap="_on_tap_button">{{label}}</paper-button>
+        <paper-menu id="menu" on-iron-select="_on_iron_select">
+            <content></content>
+        </paper-menu>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: "dm4-dropdown-menu",
+
+        _on_tap_button: function(e) {
+            var active = e.currentTarget.active;
+            // console.log("_on_tap_button", active, e)
+            if (active) {
+                this.$.menu.style.left = this.$.button.getBoundingClientRect().x + "px";
+                this.$.menu.style.display = "block";
+            } else {
+                this.$.menu.style.display = "none";
+            }
+        },
+
+        _on_iron_select: function(e) {
+            console.log("_on_iron_select", e.detail.item.value)
+        }
+    });
+</script>

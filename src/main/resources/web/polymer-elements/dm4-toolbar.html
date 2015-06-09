@@ -1,8 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="dm4-dropdown-menu.html">
 
 <dom-module id="dm4-toolbar">
     <style>
@@ -13,16 +12,23 @@
     </style>
     <template>
         An experimental DeepaMehta webclient based on Polymer!
+
+        <!-- Workspaces -->
+        <dm4-dropdown-menu label="Workspace">
+            <paper-item value="123">Workspace 1</paper-item>
+            <paper-item value="456">Workspace 2</paper-item>
+            <paper-item value="789">Workspace 3</paper-item>
+        </dm4-dropdown-menu>
+
+        <!-- Topicmaps -->
         <iron-ajax auto url="http://localhost:8080/core/topic/by_type/dm4.topicmaps.topicmap"
             headers='{"Content-Type": "application/json"}' last-response="{{ajaxResponse}}">
         </iron-ajax>
-        <h1>Public Topicmaps</h1>
-        <paper-menu>
+        <dm4-dropdown-menu label="Topicmap">
             <template is="dom-repeat" items="[[ajaxResponse.items]]">
-                <paper-item>{{item.value}}</paper-item>
+                <paper-item value="{{item.id}}">{{item.value}}</paper-item>
             </template>
-        </paper-menu>
-        <paper-button>Button</paper-button>
+        </dm4-dropdown-menu>
     </template>
 </dom-module>
 

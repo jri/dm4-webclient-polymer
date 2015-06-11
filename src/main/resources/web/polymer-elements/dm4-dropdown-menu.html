@@ -14,8 +14,8 @@
         }
     </style>
     <template>
-        <paper-button id="button" raised toggles on-tap="_on_tap_button">{{label}}</paper-button>
-        <paper-menu id="menu" on-iron-select="_on_iron_select">
+        <paper-button id="button" raised toggles on-tap="_onTapButton">{{label}}</paper-button>
+        <paper-menu id="menu" on-iron-select="_onIronSelect">
             <content></content>
         </paper-menu>
     </template>
@@ -25,9 +25,9 @@
     Polymer({
         is: "dm4-dropdown-menu",
 
-        _on_tap_button: function(e) {
+        _onTapButton: function(e) {
             var active = e.currentTarget.active;
-            // console.log("_on_tap_button", active, e)
+            // console.log("_onTapButton", active, e)
             if (active) {
                 this.$.menu.style.left = this.$.button.getBoundingClientRect().x + "px";
                 this.$.menu.style.display = "block";
@@ -36,8 +36,8 @@
             }
         },
 
-        _on_iron_select: function(e) {
-            console.log("_on_iron_select", e.detail.item.value)
+        _onIronSelect: function(e) {
+            console.log("_onIronSelect", e.detail.item.dataValue)
         }
     });
 </script>

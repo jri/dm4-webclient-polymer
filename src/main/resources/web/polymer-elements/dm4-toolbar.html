@@ -16,20 +16,20 @@
         <!-- Workspaces -->
 
         <dm4-dropdown-menu label="Workspace">
-            <paper-item data-value="123">Workspace 1</paper-item>
-            <paper-item data-value="456">Workspace 2</paper-item>
-            <paper-item data-value="789">Workspace 3</paper-item>
+            <paper-item>Workspace 1</paper-item>
+            <paper-item>Workspace 2</paper-item>
+            <paper-item>Workspace 3</paper-item>
         </dm4-dropdown-menu>
 
         <!-- Topicmaps -->
 
-        <iron-ajax id="ajax" auto url="http://localhost:8080/core/topic/by_type/dm4.topicmaps.topicmap"
+        <iron-ajax id="getTopicmaps" auto url="http://localhost:8080/core/topic/by_type/dm4.topicmaps.topicmap"
             headers='{"Content-Type": "application/json"}' last-response="{{topicmaps}}">
         </iron-ajax>
 
-        <dm4-dropdown-menu label="Topicmap">
-            <template is="dom-repeat" items="[[topicmaps.items]]">
-                <paper-item data-value="{{item.id}}">{{item.value}}</paper-item>
+        <dm4-dropdown-menu label="Topicmap" on-iron-select="_onTopicmapSelect">
+            <template id="topicmapsTemplate" is="dom-repeat" items="[[topicmaps.items]]">
+                <paper-item>{{item.value}}</paper-item>
             </template>
         </dm4-dropdown-menu>
 
@@ -41,8 +41,13 @@
     Polymer({
         is: "dm4-toolbar",
 
+        _onTopicmapSelect: function(e) {
+            var topicmap = this.$.topicmapsTemplate.itemForElement(e.detail.item);
+            this.fire("topicmap-select", {topicmapId: topicmap.id});
+        },
+
         _fetchTopicmaps: function() {
-            this.$.ajax.generateRequest();
+            this.$.getTopicmaps.generateRequest();
         }
     });
 </script>

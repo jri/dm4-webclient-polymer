@@ -15,7 +15,7 @@
     </style>
     <template>
         <paper-button id="button" raised toggles on-tap="_onTapButton">{{label}}</paper-button>
-        <paper-menu id="menu" on-iron-select="_onIronSelect">
+        <paper-menu id="menu">
             <content></content>
         </paper-menu>
     </template>
@@ -34,10 +34,6 @@
             } else {
                 this.$.menu.style.display = "none";
             }
-        },
-
-        _onIronSelect: function(e) {
-            console.log("_onIronSelect", e.detail.item.dataValue)
         }
     });
 </script>

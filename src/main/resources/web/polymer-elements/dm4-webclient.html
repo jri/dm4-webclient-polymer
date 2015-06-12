@@ -1,0 +1,20 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="dm4-toolbar.html">
+<link rel="import" href="dm4-topicmap-panel.html">
+
+<dom-module id="dm4-webclient">
+    <template>
+        <dm4-toolbar on-topicmap-select="_onTopicmapSelect"></dm4-toolbar>
+        <dm4-topicmap-panel></dm4-topicmap-panel>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: "dm4-webclient",
+
+        _onTopicmapSelect: function(e) {
+            console.log("_onTopicmapSelect", e.detail.topicmapId)
+        }
+    });
+</script>

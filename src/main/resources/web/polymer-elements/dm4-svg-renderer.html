@@ -1,0 +1,52 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="dm4-svg-renderer">
+    <template>
+        <svg width="800" height="450">
+            <!-- template is="dom-repeat" items="{{topicmap.topics}}">
+                Note 1: template does not work within <svg> because of different XML namespaces.
+                Note 2: we use computed bindings here as Polymer's path syntax does not support
+                array-style accessors and DeepaMehta's x/y property names contain dots.
+                <circle cx$="{{getX(item.view_props)}}" cy$="{{getY(item.view_props)}}" r=10 fill="#336699"></circle>
+            </template -->
+        </svg>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: "dm4-svg-renderer",
+
+        properties: {
+            topicmap: {
+                type: Object,
+                observer: "_render"
+            }
+        },
+
+        _render: function() {
+            this._empty();
+            for (var i = 0, topic; topic = this.topicmap.topics[i]; i++) {
+                this._renderTopic(topic.view_props["dm4.topicmaps.x"], topic.view_props["dm4.topicmaps.y"]);
+            }
+        },
+
+        _renderTopic: function(x, y) {
+            var xmlns = "http://www.w3.org/2000/svg";
+            var circle = document.createElementNS(xmlns, "circle");
+            Polymer.dom(circle).setAttribute("cx", x);
+            Polymer.dom(circle).setAttribute("cy", y);
+            Polymer.dom(circle).setAttribute("r", 10);
+            Polymer.dom(circle).setAttribute("fill", "#336699");
+            Polymer.dom(this.$$("svg")).appendChild(circle);
+        },
+
+        _empty: function() {
+            var svg = Polymer.dom(this.$$("svg"));
+            var child;
+            while (child = svg.firstChild) {
+                svg.removeChild(child);
+            }
+        }
+    });
+</script>

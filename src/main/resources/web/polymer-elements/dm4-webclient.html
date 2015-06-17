@@ -5,7 +5,7 @@
 <dom-module id="dm4-webclient">
     <template>
         <dm4-toolbar on-topicmap-select="_onTopicmapSelect"></dm4-toolbar>
-        <dm4-topicmap-panel></dm4-topicmap-panel>
+        <dm4-topicmap-panel id="topicmapPanel"></dm4-topicmap-panel>
     </template>
 </dom-module>
 
@@ -14,7 +14,7 @@
         is: "dm4-webclient",
 
         _onTopicmapSelect: function(e) {
-            console.log("_onTopicmapSelect", e.detail.topicmapId)
+            this.$.topicmapPanel.topicmapId = e.detail.topicmapId;
         }
     });
 </script>

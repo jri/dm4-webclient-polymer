@@ -1,12 +1,33 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="dm4-svg-renderer.html">
 
 <dom-module id="dm4-topicmap-panel">
     <template>
+        <iron-ajax id="getTopicmap" url="{{getURL(topicmapId)}}"
+            headers='{"Content-Type": "application/json", "Accept": "application/json"}' last-response="{{topicmap}}">
+        </iron-ajax>
+        <dm4-svg-renderer topicmap={{topicmap}}>
+        </dm4-svg-renderer>
     </template>
 </dom-module>
 
 <script>
     Polymer({
-        is: "dm4-topicmap-panel"
+        is: "dm4-topicmap-panel",
+
+        properties: {
+            topicmapId: {
+                type: Number,
+                observer: "_topicmapIdChanged"
+            }
+        },
+
+        _topicmapIdChanged: function() {
+            console.log("_topicmapIdChanged", this.topicmapId);
+            this.$.getTopicmap.generateRequest();
+        },
+
+        getURL: function(topicmapId) {return "http://localhost:8080/topicmap/" + topicmapId},
     });
 </script>

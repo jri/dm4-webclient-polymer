@@ -1,0 +1,77 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="dm4-canvas-renderer">
+    <style>
+        div {
+            position: absolute;
+        }
+    </style>
+    <template>
+        <canvas width="800" height="450"></canvas>
+        <template is="dom-repeat" items="{{topicmap.topics}}">
+            <div style="{{_getStyle(item.view_props)}}">{{item.value}}</div>
+        </template>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: "dm4-canvas-renderer",
+
+        properties: {
+            topicmap: {
+                type: Object,
+                observer: "_render"
+            }
+        },
+
+        ready: function() {
+            var canvas = this.$$("canvas");
+            this.ctx = canvas.getContext("2d");
+        },
+
+        _render: function() {
+            this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);    // TODO: topicmap translation
+            for (var i = 0, assoc; assoc = this.topicmap.assocs[i]; i++) {
+                var p1 = this._getTopicPos(assoc.role_1.topic_id);
+                var p2 = this._getTopicPos(assoc.role_2.topic_id);
+                this._drawLine(p1.x, p1.y, p2.x, p2.y);
+            }
+        },
+
+        _drawLine: function(x1, y1, x2, y2, width, color) {
+            // ctx.lineWidth = width
+            // ctx.strokeStyle = color
+            this.ctx.beginPath();
+            this.ctx.moveTo(x1, y1);
+            this.ctx.lineTo(x2, y2);
+            this.ctx.stroke();
+        },
+
+        _getTopic: function(id) {
+            for (var i = 0, topic; topic = this.topicmap.topics[i]; i++) {
+                if (topic.id == id) {
+                    return topic;
+                }
+            }
+        },
+
+        _getTopicPos: function(id) {
+            var viewProps = this._getTopic(id).view_props;
+            return {x: this._getX(viewProps), y: this._getY(viewProps)};
+        },
+
+        _getStyle: function(viewProps) {
+            return "background-color: hsl(210,100%,90%); top: " + this._getY(viewProps) +
+                "px; left: " + this._getX(viewProps) + "px";
+        },
+
+        _getX: function(viewProps) {
+            return viewProps["dm4.topicmaps.x"];
+        },
+
+        _getY: function(viewProps) {
+            return viewProps["dm4.topicmaps.y"];
+        }
+    });
+</script>

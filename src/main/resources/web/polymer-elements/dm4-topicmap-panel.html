@@ -1,14 +1,14 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="dm4-svg-renderer.html">
+<link rel="import" href="dm4-canvas-renderer.html">
 
 <dom-module id="dm4-topicmap-panel">
     <template>
         <iron-ajax id="getTopicmap" url="{{getURL(topicmapId)}}"
             headers='{"Content-Type": "application/json", "Accept": "application/json"}' last-response="{{topicmap}}">
         </iron-ajax>
-        <dm4-svg-renderer topicmap={{topicmap}}>
-        </dm4-svg-renderer>
+        <dm4-canvas-renderer topicmap={{topicmap}}>
+        </dm4-canvas-renderer>
     </template>
 </dom-module>
 

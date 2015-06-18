@@ -3,8 +3,14 @@
 <link rel="import" href="dm4-canvas-renderer.html">
 
 <dom-module id="dm4-topicmap-panel">
+    <style>
+        :host {
+            flex: auto;
+            background-color: lightyellow;
+        }
+    </style>
     <template>
-        <iron-ajax id="getTopicmap" url="{{getURL(topicmapId)}}"
+        <iron-ajax id="getTopicmap" url="{{_getURL(topicmapId)}}"
             headers='{"Content-Type": "application/json", "Accept": "application/json"}' last-response="{{topicmap}}">
         </iron-ajax>
         <dm4-canvas-renderer topicmap={{topicmap}}>
@@ -28,6 +34,8 @@
             this.$.getTopicmap.generateRequest();
         },
 
-        getURL: function(topicmapId) {return "http://localhost:8080/topicmap/" + topicmapId},
+        _getURL: function(topicmapId) {
+            return "http://localhost:8080/topicmap/" + topicmapId
+        }
     });
 </script>

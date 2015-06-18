@@ -1,11 +1,26 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="dm4-toolbar.html">
 <link rel="import" href="dm4-topicmap-panel.html">
+<link rel="import" href="dm4-detail-panel.html">
 
 <dom-module id="dm4-webclient">
+    <style>
+        :host {
+            display: flex;
+            flex-flow: column;
+            height: 100%;
+        }
+        div {
+            display: flex;
+            flex: auto;
+        }
+    </style>
     <template>
-        <dm4-toolbar on-topicmap-select="_onTopicmapSelect"></dm4-toolbar>
-        <dm4-topicmap-panel id="topicmapPanel"></dm4-topicmap-panel>
+        <dm4-toolbar on-topicmap-select="_topicmapSelect"></dm4-toolbar>
+        <div>
+            <dm4-topicmap-panel></dm4-topicmap-panel>
+            <dm4-detail-panel></dm4-detail-panel>
+        </div>
     </template>
 </dom-module>
 
@@ -13,8 +28,8 @@
     Polymer({
         is: "dm4-webclient",
 
-        _onTopicmapSelect: function(e) {
-            this.$.topicmapPanel.topicmapId = e.detail.topicmapId;
+        _topicmapSelect: function(e) {
+            this.$$("dm4-topicmap-panel").topicmapId = e.detail.topicmapId;
         }
     });
 </script>

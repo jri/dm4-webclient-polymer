@@ -3,12 +3,12 @@
 <dom-module id="dm4-svg-renderer">
     <template>
         <svg width="800" height="450">
-            <!-- template is="dom-repeat" items="{{topicmap.topics}}">
-                Note 1: template does not work within <svg> because of different XML namespaces.
-                Note 2: we use computed bindings here as Polymer's path syntax does not support
-                array-style accessors and DeepaMehta's x/y property names contain dots.
+            <template is="dom-repeat" items="{{topicm.topics}}">
+                <!-- Note 1: template does not work within <svg> because of different XML namespaces. -->
+                <!-- Note 2: we use computed bindings here as Polymer's path syntax does not support
+                array-style accessors and DeepaMehta's x/y property names contain dots. -->
                 <circle cx$="{{getX(item.view_props)}}" cy$="{{getY(item.view_props)}}" r=10 fill="#336699"></circle>
-            </template -->
+            </template>
         </svg>
     </template>
 </dom-module>
@@ -17,12 +17,31 @@
     Polymer({
         is: "dm4-svg-renderer",
 
-        properties: {
+        ready: function() {
+            this.topicm = {
+                topics: [
+                    {
+                        view_props: {
+                            "dm4.topicmaps.x": 100,
+                            "dm4.topicmaps.y": 50
+                        }
+                    },
+                    {
+                        view_props: {
+                            "dm4.topicmaps.x": 120,
+                            "dm4.topicmaps.y": 80
+                        }
+                    }
+                ]
+            }
+        },
+
+        /* properties: {
             topicmap: {
                 type: Object,
                 observer: "_render"
             }
-        },
+        }, */
 
         _render: function() {
             this._empty();

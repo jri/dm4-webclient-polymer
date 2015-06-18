@@ -9,7 +9,7 @@
     <template>
         <canvas width="800" height="450"></canvas>
         <template is="dom-repeat" items="{{topicmap.topics}}">
-            <div style="{{_getStyle(item.view_props)}}">{{item.value}}</div>
+            <div style$="{{_getStyle(item.view_props)}}">{{item.value}}</div>
         </template>
     </template>
 </dom-module>

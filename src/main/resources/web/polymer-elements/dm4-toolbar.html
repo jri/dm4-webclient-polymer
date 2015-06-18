@@ -6,15 +6,14 @@
 <dom-module id="dm4-toolbar">
     <style>
         :host {
-            display: block;
+            flex: none;
             background-color: lightblue;
         }
     </style>
     <template>
-        An experimental DeepaMehta webclient based on Polymer!
-
         <!-- Workspaces -->
 
+        Workspace
         <dm4-dropdown-menu label="Workspace">
             <paper-item>Workspace 1</paper-item>
             <paper-item>Workspace 2</paper-item>
@@ -23,17 +22,16 @@
 
         <!-- Topicmaps -->
 
-        <iron-ajax id="getTopicmaps" auto url="http://localhost:8080/core/topic/by_type/dm4.topicmaps.topicmap"
+        <iron-ajax auto url="http://localhost:8080/core/topic/by_type/dm4.topicmaps.topicmap"
             headers='{"Content-Type": "application/json"}' last-response="{{topicmaps}}">
         </iron-ajax>
 
-        <dm4-dropdown-menu label="Topicmap" on-iron-select="_onTopicmapSelect">
+        Topicmap
+        <dm4-dropdown-menu label="Topicmap" on-iron-select="_topicmapSelect">
             <template id="topicmapsTemplate" is="dom-repeat" items="[[topicmaps.items]]">
                 <paper-item>{{item.value}}</paper-item>
             </template>
         </dm4-dropdown-menu>
-
-        <iron-button on-tap="_fetchTopicmaps">Refresh Topicmaps</iron-button>
     </template>
 </dom-module>
 
@@ -41,13 +39,9 @@
     Polymer({
         is: "dm4-toolbar",
 
-        _onTopicmapSelect: function(e) {
+        _topicmapSelect: function(e) {
             var topicmap = this.$.topicmapsTemplate.itemForElement(e.detail.item);
             this.fire("topicmap-select", {topicmapId: topicmap.id});
-        },
-
-        _fetchTopicmaps: function() {
-            this.$.getTopicmaps.generateRequest();
         }
     });
 </script>

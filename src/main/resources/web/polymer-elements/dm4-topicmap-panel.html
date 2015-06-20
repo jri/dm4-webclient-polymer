@@ -3,6 +3,7 @@
 <link rel="import" href="dm4-canvas-renderer.html">
 
 <dom-module id="dm4-topicmap-panel">
+
     <style>
         :host {
             flex: auto;
@@ -10,6 +11,7 @@
             background-color: lightyellow;
         }
     </style>
+
     <template>
         <iron-ajax id="getTopicmap" url="{{_getURL(topicmapId)}}"
             headers='{"Content-Type": "application/json", "Accept": "application/json"}' last-response="{{topicmap}}">
@@ -17,26 +19,27 @@
         <dm4-canvas-renderer topicmap={{topicmap}}>
         </dm4-canvas-renderer>
     </template>
-</dom-module>
 
-<script>
-    Polymer({
-        is: "dm4-topicmap-panel",
+    <script>
+        Polymer({
+            is: "dm4-topicmap-panel",
 
-        properties: {
-            topicmapId: {
-                type: Number,
-                observer: "_topicmapIdChanged"
+            properties: {
+                topicmapId: {
+                    type: Number,
+                    observer: "_topicmapIdChanged"
+                }
+            },
+
+            _topicmapIdChanged: function() {
+                console.log("_topicmapIdChanged", this.topicmapId);
+                this.$.getTopicmap.generateRequest();
+            },
+
+            _getURL: function(topicmapId) {
+                return "http://localhost:8080/topicmap/" + topicmapId
             }
-        },
+        });
+    </script>
 
-        _topicmapIdChanged: function() {
-            console.log("_topicmapIdChanged", this.topicmapId);
-            this.$.getTopicmap.generateRequest();
-        },
-
-        _getURL: function(topicmapId) {
-            return "http://localhost:8080/topicmap/" + topicmapId
-        }
-    });
-</script>
+</dom-module>

@@ -4,6 +4,7 @@
 <link rel="import" href="dm4-dropdown-menu.html">
 
 <dom-module id="dm4-toolbar">
+
     <style>
         :host {
             flex: none;
@@ -11,6 +12,7 @@
             background-color: lightblue;
         }
     </style>
+
     <template>
         <!-- Workspaces -->
 
@@ -34,18 +36,19 @@
             </template>
         </dm4-dropdown-menu>
     </template>
+
+    <script>
+        Polymer({
+            is: "dm4-toolbar",
+
+            _topicmapSelect: function(e) {
+                // Note: "e.detail.item" is the selected paper-item element,
+                // its "dataHost" is the TemplateInstance,
+                // "dataHost.item" is the original data item.
+                var topicmap = e.detail.item.dataHost.item;
+                this.fire("topicmap-select", {topicmapId: topicmap.id});
+            }
+        });
+    </script>
+
 </dom-module>
-
-<script>
-    Polymer({
-        is: "dm4-toolbar",
-
-        _topicmapSelect: function(e) {
-            // Note: "e.detail.item" is the selected paper-item element,
-            // its "dataHost" is the TemplateInstance,
-            // "dataHost.item" is the original data item.
-            var topicmap = e.detail.item.dataHost.item;
-            this.fire("topicmap-select", {topicmapId: topicmap.id});
-        }
-    });
-</script>

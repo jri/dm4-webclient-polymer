@@ -4,6 +4,7 @@
 <link rel="import" href="dm4-detail-panel.html">
 
 <dom-module id="dm4-webclient">
+
     <style>
         :host {
             display: flex;
@@ -16,6 +17,7 @@
             flex: auto;
         }
     </style>
+
     <template>
         <dm4-toolbar on-topicmap-select="_topicmapSelect"></dm4-toolbar>
         <div>
@@ -23,14 +25,15 @@
             <dm4-detail-panel></dm4-detail-panel>
         </div>
     </template>
+
+    <script>
+        Polymer({
+            is: "dm4-webclient",
+
+            _topicmapSelect: function(e) {
+                this.$$("dm4-topicmap-panel").topicmapId = e.detail.topicmapId;
+            }
+        });
+    </script>
+
 </dom-module>
-
-<script>
-    Polymer({
-        is: "dm4-webclient",
-
-        _topicmapSelect: function(e) {
-            this.$$("dm4-topicmap-panel").topicmapId = e.detail.topicmapId;
-        }
-    });
-</script>

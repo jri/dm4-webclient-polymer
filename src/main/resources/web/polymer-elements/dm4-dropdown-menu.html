@@ -18,8 +18,8 @@
     <template>
         <!-- Note: with Firefox the paper-button "noink" attribute causes constant high CPU load
         once the button is pressed -->
-        <paper-button raised toggles on-tap="_buttonTap">{{label}}</paper-button>
-        <paper-menu on-iron-select="_itemSelect">
+        <paper-button id="button" on-tap="_buttonTap" toggles raised>{{label}}</paper-button>
+        <paper-menu id="menu" on-iron-select="_itemSelect">
             <content></content>
         </paper-menu>
     </template>
@@ -28,14 +28,9 @@
         Polymer({
             is: "dm4-dropdown-menu",
 
-            ready: function() {
-                this.button = this.$$("paper-button");
-                this.menu = this.$$("paper-menu");
-            },
-
             _buttonTap: function(e) {
-                if (this.button.active) {
-                    this.menu.style.left = this.button.getBoundingClientRect().left + "px";
+                if (this.$.button.active) {
+                    this.$.menu.style.left = this.$.button.getBoundingClientRect().left + "px";
                     this._showMenu();
                 } else {
                     this._hideMenu();
@@ -43,16 +38,16 @@
             },
 
             _itemSelect: function() {
-                this.button.active = false;
+                this.$.button.active = false;
                 this._hideMenu();
             },
 
             _showMenu: function() {
-                this.menu.style.display = "block";
+                this.$.menu.style.display = "block";
             },
 
             _hideMenu: function() {
-                this.menu.style.display = "none";
+                this.$.menu.style.display = "none";
             }
         });
     </script>

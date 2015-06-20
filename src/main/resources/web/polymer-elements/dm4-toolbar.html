@@ -7,6 +7,7 @@
     <style>
         :host {
             flex: none;
+            z-index: 1;     /* place menus above topicmap panel */
             background-color: lightblue;
         }
     </style>
@@ -28,7 +29,7 @@
 
         Topicmap
         <dm4-dropdown-menu label="Topicmap" on-iron-select="_topicmapSelect">
-            <template id="topicmapsTemplate" is="dom-repeat" items="[[topicmaps.items]]">
+            <template is="dom-repeat" items="[[topicmaps.items]]">
                 <paper-item>{{item.value}}</paper-item>
             </template>
         </dm4-dropdown-menu>
@@ -40,7 +41,10 @@
         is: "dm4-toolbar",
 
         _topicmapSelect: function(e) {
-            var topicmap = this.$.topicmapsTemplate.itemForElement(e.detail.item);
+            // Note: "e.detail.item" is the selected paper-item element,
+            // its "dataHost" is the TemplateInstance,
+            // "dataHost.item" is the original data item.
+            var topicmap = e.detail.item.dataHost.item;
             this.fire("topicmap-select", {topicmapId: topicmap.id});
         }
     });

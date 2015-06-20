@@ -2,14 +2,17 @@
 
 <dom-module id="dm4-canvas-renderer">
     <style>
-        div {
+        .topic {
             position: absolute;
+            padding: 2px 12px 2px 4px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
         }
     </style>
     <template>
         <canvas width="800" height="450"></canvas>
         <template is="dom-repeat" items="{{topicmap.topics}}">
-            <div style$="{{_getStyle(item.view_props)}}">{{item.value}}</div>
+            <div class="topic" on-track="_topicTrack" style$="{{_getStyle(item.view_props)}}">{{item.value}}</div>
         </template>
     </template>
 </dom-module>
@@ -18,35 +21,48 @@
     Polymer({
         is: "dm4-canvas-renderer",
 
+        ASSOC_WIDTH: 4,
+        DEFAULT_ASSOC_COLOR: "#b2b2b2",
+
         properties: {
             topicmap: {
                 type: Object,
-                observer: "_render"
+                observer: "_drawAssociations"
             }
         },
 
         ready: function() {
-            var canvas = this.$$("canvas");
-            this.ctx = canvas.getContext("2d");
+            this.ctx = this.$$("canvas").getContext("2d");
         },
 
-        _render: function() {
+        // --- Local DOM ---
+
+        _getStyle: function(viewProps) {
+            return "left: " + this._getX(viewProps) + "px; top: " + this._getY(viewProps) + "px; " +
+                "background-color: hsl(210,100%,90%);";
+        },
+
+        // --- Canvas Drawing ---
+
+        _drawAssociations: function() {
             this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);    // TODO: topicmap translation
             for (var i = 0, assoc; assoc = this.topicmap.assocs[i]; i++) {
                 var p1 = this._getTopicPos(assoc.role_1.topic_id);
                 var p2 = this._getTopicPos(assoc.role_2.topic_id);
-                this._drawLine(p1.x, p1.y, p2.x, p2.y);
+                this._drawLine(p1.x, p1.y, p2.x, p2.y, this.ASSOC_WIDTH, this.DEFAULT_ASSOC_COLOR);
             }
         },
 
         _drawLine: function(x1, y1, x2, y2, width, color) {
-            // ctx.lineWidth = width
-            // ctx.strokeStyle = color
+            this.ctx.lineWidth = width
+            this.ctx.strokeStyle = color
             this.ctx.beginPath();
             this.ctx.moveTo(x1, y1);
             this.ctx.lineTo(x2, y2);
             this.ctx.stroke();
         },
+
+        // --- Model Access ---
 
         _getTopic: function(id) {
             for (var i = 0, topic; topic = this.topicmap.topics[i]; i++) {
@@ -61,17 +77,46 @@
             return {x: this._getX(viewProps), y: this._getY(viewProps)};
         },
 
-        _getStyle: function(viewProps) {
-            return "background-color: hsl(210,100%,90%); top: " + this._getY(viewProps) +
-                "px; left: " + this._getX(viewProps) + "px";
-        },
-
         _getX: function(viewProps) {
             return viewProps["dm4.topicmaps.x"];
         },
 
         _getY: function(viewProps) {
             return viewProps["dm4.topicmaps.y"];
+        },
+
+        // Event Handling
+
+        _topicTrack: function(e) {
+            switch (e.detail.state) {
+            case "start":
+                console.log("track start");
+                break;
+            case "track":
+                var topic = e.model.item;
+                // For notification to work a new view-props object must be created
+                var changedViewProps = {
+                    "dm4.topicmaps.x": topic.view_props["dm4.topicmaps.x"] + e.detail.ddx,
+                    "dm4.topicmaps.y": topic.view_props["dm4.topicmaps.y"] + e.detail.ddy
+                }
+                // We don't want remove the additional view-props, so we don't use e.model.set().
+                // e.model.set("item.view_props", changedViewProps);
+                //
+                // Instead we update our model manually and then call e.model.notifyPath().
+                topic.view_props["dm4.topicmaps.x"] = changedViewProps["dm4.topicmaps.x"];
+                topic.view_props["dm4.topicmaps.y"] = changedViewProps["dm4.topicmaps.y"];
+                e.model.notifyPath("item.view_props", changedViewProps);
+                // Note: we can't use set() or notifyPath() to update the single x/y view-prop values because
+                // Polymer does not support array-like accessors in paths and the view-prop names contain dots.
+                // That's why we make the (structured) view-props object the subject of notification.
+                //
+                this._drawAssociations();
+                //
+                break;
+            case "end":
+                console.log("track end");
+                break;
+            }
         }
     });
 </script>

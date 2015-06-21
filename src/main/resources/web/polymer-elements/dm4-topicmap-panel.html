@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="dm4-canvas-renderer.html">
 
 <dom-module id="dm4-topicmap-panel">
@@ -8,6 +9,7 @@
         :host {
             flex: auto;
             position: relative;
+            overflow: hidden;
             background-color: lightyellow;
         }
     </style>
@@ -16,7 +18,7 @@
         <iron-ajax id="getTopicmap" url="{{_getURL(topicmapId)}}"
             headers='{"Content-Type": "application/json", "Accept": "application/json"}' last-response="{{topicmap}}">
         </iron-ajax>
-        <dm4-canvas-renderer topicmap={{topicmap}}>
+        <dm4-canvas-renderer topicmap={{topicmap}} size="{{size}}">
         </dm4-canvas-renderer>
     </template>
 
@@ -31,9 +33,24 @@
                 }
             },
 
+            behaviors: [
+                Polymer.IronResizableBehavior
+            ],
+
+            listeners: {
+                "iron-resize": "_panelResized"
+            },
+
             _topicmapIdChanged: function() {
                 console.log("_topicmapIdChanged", this.topicmapId);
                 this.$.getTopicmap.generateRequest();
+            },
+
+            _panelResized: function(e) {
+                this.size = {
+                    width: this.clientWidth,
+                    height: this.clientHeight
+                }
             },
 
             _getURL: function(topicmapId) {

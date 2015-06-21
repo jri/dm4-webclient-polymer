@@ -6,13 +6,15 @@
         .topic {
             position: absolute;
             padding: 2px 12px 2px 4px;
+            user-select: none;
             -webkit-user-select: none;
             -moz-user-select: none;
+            -ms-user-select: none;
         }
     </style>
 
     <template>
-        <canvas width="800" height="450"></canvas>
+        <canvas width="{{size.width}}" height="{{size.height}}"></canvas>
         <template is="dom-repeat" items="{{topicmap.topics}}">
             <div class="topic" on-track="_topicTrack" style$="{{_getStyle(item.view_props)}}">{{item.value}}</div>
         </template>
@@ -29,6 +31,10 @@
                 topicmap: {
                     type: Object,
                     observer: "_drawAssociations"
+                },
+                size: {
+                    type: Object,
+                    observer: "_sizeChanged"
                 }
             },
 
@@ -43,9 +49,19 @@
                     "background-color: hsl(210,100%,90%);";
             },
 
+            _sizeChanged: function() {
+                console.log("canvas renderer size changed", this.size)
+                this._drawAssociations();
+            },
+
             // --- Canvas Drawing ---
 
             _drawAssociations: function() {
+                // at the time of the first resize event no topicmap is set
+                if (!this.topicmap) {
+                    return;
+                }
+                //
                 this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);   // TODO: topicmap translation
                 for (var i = 0, assoc; assoc = this.topicmap.assocs[i]; i++) {
                     var p1 = this._getTopicPos(assoc.role_1.topic_id);

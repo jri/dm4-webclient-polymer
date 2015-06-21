@@ -1,22 +1,12 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="dm4-canvas-topic.html">
 
 <dom-module id="dm4-canvas-renderer">
-
-    <style>
-        .topic {
-            position: absolute;
-            padding: 2px 12px 2px 4px;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
-    </style>
 
     <template>
         <canvas width="{{size.width}}" height="{{size.height}}"></canvas>
         <template is="dom-repeat" items="{{topicmap.topics}}">
-            <div class="topic" on-track="_topicTrack" style$="{{_getStyle(item.view_props)}}">{{item.value}}</div>
+            <dm4-canvas-topic topic={{item}}></dm4-canvas-topic>
         </template>
     </template>
 
@@ -34,8 +24,12 @@
                 },
                 size: {
                     type: Object,
-                    observer: "_sizeChanged"
+                    observer: "_canvasSizeChanged"
                 }
+            },
+
+            listeners: {
+                "topic-move": "_drawAssociations"
             },
 
             ready: function() {
@@ -44,12 +38,7 @@
 
             // --- Local DOM ---
 
-            _getStyle: function(viewProps) {
-                return "left: " + this._getX(viewProps) + "px; top: " + this._getY(viewProps) + "px; " +
-                    "background-color: hsl(210,100%,90%);";
-            },
-
-            _sizeChanged: function() {
+            _canvasSizeChanged: function() {
                 console.log("canvas renderer size changed", this.size)
                 this._drawAssociations();
             },
@@ -100,44 +89,8 @@
 
             _getY: function(viewProps) {
                 return viewProps["dm4.topicmaps.y"];
-            },
-
-            // Event Handling
-
-            _topicTrack: function(e) {
-                switch (e.detail.state) {
-                case "start":
-                    console.log("track start");
-                    break;
-                case "track":
-                    var topic = e.model.item;
-                    // Note: we can't use set() or notifyPath() to update the single x/y view-prop values because
-                    // Polymer does not support array-style accessors in paths and the view-prop names contain dots.
-                    // That's why we make the (structured) view-props object the subject of notification.
-                    //
-                    // For notification to work a new view-props object must be created
-                    var changedViewProps = {
-                        "dm4.topicmaps.x": topic.view_props["dm4.topicmaps.x"] + e.detail.ddx,
-                        "dm4.topicmaps.y": topic.view_props["dm4.topicmaps.y"] + e.detail.ddy
-                    }
-                    // We don't want remove the additional view-props, so we don't use set().
-                    // e.model.set("item.view_props", changedViewProps);
-                    //
-                    // Instead we update the topic manually and then call notifyPath().
-                    topic.view_props["dm4.topicmaps.x"] = changedViewProps["dm4.topicmaps.x"];
-                    topic.view_props["dm4.topicmaps.y"] = changedViewProps["dm4.topicmaps.y"];
-                    e.model.notifyPath("item.view_props", changedViewProps);
-                    //
-                    this._drawAssociations();
-                    //
-                    break;
-                case "end":
-                    console.log("track end");
-                    break;
-                }
             }
         });
     </script>
 
 </dom-module>
-

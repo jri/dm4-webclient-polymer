@@ -30,7 +30,7 @@
         </iron-ajax>
 
         Topicmap
-        <dm4-dropdown-menu label="Topicmap" on-iron-select="_topicmapSelect">
+        <dm4-dropdown-menu label="Topicmap" on-iron-select="_topicmapSelected">
             <template is="dom-repeat" items="[[topicmaps.items]]">
                 <paper-item>{{item.value}}</paper-item>
             </template>
@@ -41,12 +41,12 @@
         Polymer({
             is: "dm4-toolbar",
 
-            _topicmapSelect: function(e) {
+            _topicmapSelected: function(e) {
                 // Note: "e.detail.item" is the selected paper-item element,
                 // its "dataHost" is the TemplateInstance,
                 // "dataHost.item" is the original data item.
                 var topicmap = e.detail.item.dataHost.item;
-                this.fire("topicmap-select", {topicmapId: topicmap.id});
+                this.fire("topicmap-select", {topicmap: topicmap});
             }
         });
     </script>

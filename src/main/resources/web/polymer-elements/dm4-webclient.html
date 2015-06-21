@@ -19,7 +19,7 @@
     </style>
 
     <template>
-        <dm4-toolbar on-topicmap-select="_topicmapSelect"></dm4-toolbar>
+        <dm4-toolbar on-topicmap-select="_topicmapSelected"></dm4-toolbar>
         <div>
             <dm4-topicmap-panel></dm4-topicmap-panel>
             <dm4-detail-panel></dm4-detail-panel>
@@ -30,8 +30,8 @@
         Polymer({
             is: "dm4-webclient",
 
-            _topicmapSelect: function(e) {
-                this.$$("dm4-topicmap-panel").topicmapId = e.detail.topicmapId;
+            _topicmapSelected: function(e) {
+                this.$$("dm4-topicmap-panel").topicmapId = e.detail.topicmap.id;
             }
         });
     </script>

@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 
 <dom-module id="dm4-detail-panel">
 
@@ -10,12 +11,35 @@
     </style>
 
     <template>
-        <!-- without a template style is not applied -->
+        <iron-ajax id="getTopic" url="{{_getURL(topicId)}}" content-type="application/json" last-response="{{topic}}">
+        </iron-ajax>
+
+        <h2>{{topic.value}}<h2>
+        <h3>{{_getTypeName(topic)}}</h3>
     </template>
 
     <script>
         Polymer({
-            is: "dm4-detail-panel"
+            is: "dm4-detail-panel",
+
+            properties: {
+                topicId: {
+                    type: Number,
+                    observer: "_topicIdChanged"
+                }
+            },
+
+            _topicIdChanged: function() {
+                this.$.getTopic.generateRequest();
+            },
+
+            _getURL: function(topicId) {
+                return "http://localhost:8080/core/topic/" + topicId
+            },
+
+            _getTypeName: function(topic) {
+                return this.topicTypes[topic.type_uri].value
+            }
         });
     </script>
 

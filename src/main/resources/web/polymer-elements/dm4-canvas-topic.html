@@ -11,17 +11,22 @@
             -moz-user-select: none;
             -ms-user-select: none;
         }
+        .topic[selected] {
+            box-shadow: 0 0 1em blue;
+        }
     </style>
 
     <template>
-        <div class="topic" on-track="_topicTrack" style$="{{_getStyle(topic.view_props)}}">{{topic.value}}</div>
+        <div class="topic" style$="{{_getStyle(topic.view_props)}}" selected$="{{selected}}">{{topic.value}}</div>
     </template>
 
     <script>
         Polymer({
             is: "dm4-canvas-topic",
 
-            properties: {
+            listeners: {
+                "tap": "_topicTap",
+                "track": "_topicTrack"
             },
 
             // --- Local DOM ---
@@ -41,7 +46,13 @@
                 return viewProps["dm4.topicmaps.y"];
             },
 
-            // Event Handling
+            // -- Event Handling --
+
+            _topicTap: function() {
+                // console.log("topic clicked");
+                this.selected = !this.selected;
+                this.fire("topic-select", {topic: this.topic});
+            },
 
             _topicTrack: function(e) {
                 switch (e.detail.state) {

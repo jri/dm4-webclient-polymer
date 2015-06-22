@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="dm4-toolbar.html">
 <link rel="import" href="dm4-topicmap-panel.html">
 <link rel="import" href="dm4-detail-panel.html">
@@ -7,10 +8,10 @@
 
     <style>
         :host {
+            font-family: "Roboto", "Noto", sans-serif;
             display: flex;
             flex-flow: column;
             height: 100%;
-            font-family: "Roboto", "Noto", sans-serif;
         }
         div {
             display: flex;
@@ -19,10 +20,17 @@
     </style>
 
     <template>
-        <dm4-toolbar on-topicmap-select="_topicmapSelected"></dm4-toolbar>
+        <iron-ajax auto url="http://localhost:8080/core/topictype/all" content-type="application/json"
+            last-response="{{typeDefs.topicTypes}}">
+        </iron-ajax>
+        <iron-ajax auto url="http://localhost:8080/core/assoctype/all" content-type="application/json"
+            last-response="{{typeDefs.assocTypes}}">
+        </iron-ajax>
+
+        <dm4-toolbar></dm4-toolbar>
         <div>
             <dm4-topicmap-panel></dm4-topicmap-panel>
-            <dm4-detail-panel></dm4-detail-panel>
+            <dm4-detail-panel topic-types={{topicTypes}} assoc-types={{assocTypes}}></dm4-detail-panel>
         </div>
     </template>
 
@@ -30,8 +38,61 @@
         Polymer({
             is: "dm4-webclient",
 
+            properties:  {
+                typeDefs: {     // intermediate
+                    type: Object,
+                    value: {}
+                },
+                topicTypes: {
+                    type: Object,
+                    value: {}
+                },
+                assocTypes: {
+                    type: Object,
+                    value: {}
+                }
+            },
+
+            observers: [
+                "_hashTopicTypes(typeDefs.topicTypes)",
+                "_hashAssocTypes(typeDefs.assocTypes)"
+            ],
+
+            listeners: {
+                "topic-select": "_topicSelected",
+                "topicmap-select": "_topicmapSelected"
+            },
+
+            // ---
+
+            _topicSelected: function(e) {
+                this.$$("dm4-detail-panel").topicId = e.detail.topic.id;
+            },
+
             _topicmapSelected: function(e) {
                 this.$$("dm4-topicmap-panel").topicmapId = e.detail.topicmap.id;
+            },
+
+            // --- Helper ---
+
+            _hashTopicTypes: function(topicTypes) {
+                // with the first call topicTypes is undefined. Why?
+                if (topicTypes) {   
+                    this._hash(this.topicTypes, topicTypes);
+                }
+            },
+
+            _hashAssocTypes: function(assocTypes) {
+                // with the first call assocTypes is undefined. Why?
+                if (assocTypes) {
+                    this._hash(this.assocTypes, assocTypes);
+                }
+            },
+
+            _hash: function(object, array) {
+                for (var i = 0, item; item = array[i]; i++) {
+                    object[item.uri] = item;
+                }
             }
         });
     </script>

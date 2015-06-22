@@ -41,7 +41,10 @@
             properties:  {
                 typeDefs: {     // intermediate
                     type: Object,
-                    value: {}
+                    value: {
+                        topicTypes: [],
+                        assocTypes: []
+                    }
                 },
                 topicTypes: {
                     type: Object,
@@ -76,22 +79,18 @@
             // --- Helper ---
 
             _hashTopicTypes: function(topicTypes) {
-                // with the first call topicTypes is undefined. Why?
-                if (topicTypes) {   
-                    this._hash(this.topicTypes, topicTypes);
-                }
+                // console.log("_hashTopicTypes", topicTypes);
+                this._hash(topicTypes, this.topicTypes, DM4.TopicType);
             },
 
             _hashAssocTypes: function(assocTypes) {
-                // with the first call assocTypes is undefined. Why?
-                if (assocTypes) {
-                    this._hash(this.assocTypes, assocTypes);
-                }
+                // console.log("_hashAssocTypes", assocTypes);
+                this._hash(assocTypes, this.assocTypes, DM4.AssociationType);
             },
 
-            _hash: function(object, array) {
+            _hash: function(array, object, constructor) {
                 for (var i = 0, item; item = array[i]; i++) {
-                    object[item.uri] = item;
+                    object[item.uri] = new constructor(item);
                 }
             }
         });

@@ -1,0 +1,31 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="dm4-topic-renderer">
+
+    <style>
+    </style>
+
+    <template>
+        <template is="dom-if" if="{{_isSimple(topic)}}">
+            <div>Simple</div>
+        </template>
+        <template is="dom-if" if="{{_isComposite(topic)}}">
+            <div>Composite</div>
+        </template>
+    </template>
+
+    <script>
+        Polymer({
+            is: "dm4-topic-renderer",
+
+            _isSimple: function(topic) {
+                return this.topicTypes[topic.type_uri].isSimple();
+            },
+
+            _isComposite: function(topic) {
+                return this.topicTypes[topic.type_uri].isComposite();
+            }
+        });
+    </script>
+
+</dom-module>

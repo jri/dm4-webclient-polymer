@@ -1,16 +1,17 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="dm4-simple-renderer.html">
+<link rel="import" href="dm4-composite-renderer.html">
 
 <dom-module id="dm4-topic-renderer">
 
-    <style>
-    </style>
-
     <template>
-        <template is="dom-if" if="{{_isSimple(topic)}}">
-            <div>Simple</div>
+        <template is="dom-if" if="{{_isSimple(topic)}}" restamp>
+            <dm4-simple-renderer topic="{{topic}}" topic-types="{{topicTypes}}">
+            </dm4-simple-renderer>
         </template>
-        <template is="dom-if" if="{{_isComposite(topic)}}">
-            <div>Composite</div>
+        <template is="dom-if" if="{{_isComposite(topic)}}" restamp>
+            <dm4-composite-renderer topic="{{topic}}" topic-types="{{topicTypes}}">
+            </dm4-composite-renderer>
         </template>
     </template>
 
@@ -19,12 +20,14 @@
             is: "dm4-topic-renderer",
 
             _isSimple: function(topic) {
-                return this.topicTypes[topic.type_uri].isSimple();
+                console.log("_isSimple", topic, this.topicTypes);
+                return topic && this.topicTypes && this.topicTypes[topic.type_uri].isSimple();
             },
 
             _isComposite: function(topic) {
-                return this.topicTypes[topic.type_uri].isComposite();
-            }
+                console.log("_isComposite", topic, this.topicTypes);
+                return topic && this.topicTypes && this.topicTypes[topic.type_uri].isComposite();
+            },
         });
     </script>
 

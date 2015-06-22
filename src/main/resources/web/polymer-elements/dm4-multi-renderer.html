@@ -1,0 +1,19 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="dm4-topic-renderer.html">
+
+<dom-module id="dm4-multi-renderer">
+
+    <template>
+        <template is="dom-repeat" items="{{topics}}">
+            <dm4-topic-renderer topic="{{item}}" topic-types="{{topicTypes}}">
+            </dm4-topic-renderer>
+        </template>
+    </template>
+
+    <script>
+        Polymer({
+            is: "dm4-multi-renderer"
+        });
+    </script>
+
+</dom-module>

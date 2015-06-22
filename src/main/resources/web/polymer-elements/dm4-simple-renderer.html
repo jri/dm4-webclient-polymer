@@ -1,0 +1,21 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="dm4-simple-renderer">
+
+    <template>
+        <div>Simple</div>
+        <span>{{_getTypeName(topic)}}</span>: <span>{{topic.value}}</span>
+    </template>
+
+    <script>
+        Polymer({
+            is: "dm4-simple-renderer",
+
+            _getTypeName: function(topic) {
+                console.log("_getTypeName", topic);
+                return topic ? this.topicTypes[topic.type_uri].value : "???";
+            }
+        });
+    </script>
+
+</dom-module>

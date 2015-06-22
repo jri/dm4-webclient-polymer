@@ -12,13 +12,14 @@
     </style>
 
     <template>
-        <iron-ajax id="getTopic" url="{{_getURL(topicId)}}" content-type="application/json" last-response="{{topic}}">
+        <iron-ajax id="getTopic" url="{{_getURL(topicId)}}" params='{"include_childs": true}'
+            content-type="application/json" last-response="{{topic}}">
         </iron-ajax>
 
         <h2>{{topic.value}}<h2>
         <h3>{{_getTypeName(topic)}}</h3>
 
-        <dm4-topic-renderer topic={{topic}} topic-types={{topicTypes}}><dm4-topic-renderer>
+        <dm4-topic-renderer topic={{topic}} topic-types={{topicTypes}}></dm4-topic-renderer>
     </template>
 
     <script>

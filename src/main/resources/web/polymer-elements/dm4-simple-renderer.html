@@ -7,10 +7,22 @@
         :host {
             display: block;
         }
+
+        .label {
+            font-size: 75%;
+            color: #aaa;
+            margin-bottom: -0.1em;
+        }
+
+        .value {
+            line-height: 160%;
+            margin-bottom: 0.8em;
+        }
     </style>
 
     <template>
-        <span>{{_getTypeName(topic)}}</span>: <span>{{topic.value}}</span>
+        <div class="label">{{_getTypeName(topic)}}</div>
+        <div class="value">{{topic.value}}</div>
     </template>
 
     <script>

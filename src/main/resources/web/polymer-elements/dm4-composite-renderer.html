@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="dm4-topic-renderer.html">
 <link rel="import" href="dm4-multi-renderer.html">
+<link rel="import" href="dm4-behaviors.html">
 
 <dom-module id="dm4-composite-renderer">
 
@@ -22,9 +23,13 @@
         Polymer({
             is: "dm4-composite-renderer",
 
+            behaviors: [
+                DM4.Utils
+            ],
+
             _getAssocDefs: function(topic) {
                 console.log("_getAssocDefs", topic);
-                return topic ? this._getTopicType(topic.type_uri).assocDefs : [];
+                return topic ? this.getTopicType(topic.type_uri).assocDefs : [];
             },
 
             _getChildTopic: function(topic, assocDef) {
@@ -45,10 +50,6 @@
             _isMany: function(assocDef) {
                 console.log("_isMany", assocDef);
                 return assocDef.child_cardinality_uri == "dm4.core.many";
-            },
-
-            _getTopicType: function(typeUri) {
-                return document.createElement("iron-meta").byKey("topicTypes")[typeUri];
             }
         });
     </script>

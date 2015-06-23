@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="dm4-topic-renderer.html">
+<link rel="import" href="dm4-behaviors.html">
 
 <dom-module id="dm4-detail-panel">
 
@@ -33,6 +34,10 @@
                 }
             },
 
+            behaviors: [
+                DM4.Utils
+            ],
+
             _topicIdChanged: function() {
                 this.$.getTopic.generateRequest();
             },
@@ -42,11 +47,7 @@
             },
 
             _getTypeName: function(topic) {
-                return this._getTopicType(topic.type_uri).value;
-            },
-
-            _getTopicType: function(typeUri) {
-                return document.createElement("iron-meta").byKey("topicTypes")[typeUri];
+                return this.getTopicType(topic.type_uri).value;
             }
         });
     </script>

@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="dm4-behaviors.html">
 
 <dom-module id="dm4-simple-renderer">
 
@@ -11,14 +12,14 @@
         Polymer({
             is: "dm4-simple-renderer",
 
+            behaviors: [
+                DM4.Utils
+            ],
+
             _getTypeName: function(topic) {
                 console.log("_getTypeName", topic);
-                return topic ? this._getTopicType(topic.type_uri).value : "???";
+                return topic ? this.getTopicType(topic.type_uri).value : "???";
             },
-
-            _getTopicType: function(typeUri) {
-                return document.createElement("iron-meta").byKey("topicTypes")[typeUri];
-            }
         });
     </script>
 

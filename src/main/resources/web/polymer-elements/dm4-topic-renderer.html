@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="dm4-simple-renderer.html">
 <link rel="import" href="dm4-composite-renderer.html">
+<link rel="import" href="dm4-behaviors.html">
 
 <dom-module id="dm4-topic-renderer">
 
@@ -17,18 +18,18 @@
         Polymer({
             is: "dm4-topic-renderer",
 
+            behaviors: [
+                DM4.Utils
+            ],
+
             _isSimple: function(topic) {
                 console.log("_isSimple", topic);
-                return topic && this._getTopicType(topic.type_uri).isSimple();
+                return topic && this.getTopicType(topic.type_uri).isSimple();
             },
 
             _isComposite: function(topic) {
                 console.log("_isComposite", topic);
-                return topic && this._getTopicType(topic.type_uri).isComposite();
-            },
-
-            _getTopicType: function(typeUri) {
-                return document.createElement("iron-meta").byKey("topicTypes")[typeUri];
+                return topic && this.getTopicType(topic.type_uri).isComposite();
             }
         });
     </script>

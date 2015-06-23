@@ -6,12 +6,10 @@
 
     <template>
         <template is="dom-if" if="{{_isSimple(topic)}}" restamp>
-            <dm4-simple-renderer topic="{{topic}}" topic-types="{{topicTypes}}">
-            </dm4-simple-renderer>
+            <dm4-simple-renderer topic="{{topic}}"></dm4-simple-renderer>
         </template>
         <template is="dom-if" if="{{_isComposite(topic)}}" restamp>
-            <dm4-composite-renderer topic="{{topic}}" topic-types="{{topicTypes}}">
-            </dm4-composite-renderer>
+            <dm4-composite-renderer topic="{{topic}}"></dm4-composite-renderer>
         </template>
     </template>
 
@@ -20,14 +18,18 @@
             is: "dm4-topic-renderer",
 
             _isSimple: function(topic) {
-                console.log("_isSimple", topic, this.topicTypes);
-                return topic && this.topicTypes && this.topicTypes[topic.type_uri].isSimple();
+                console.log("_isSimple", topic);
+                return topic && this._getTopicType(topic.type_uri).isSimple();
             },
 
             _isComposite: function(topic) {
-                console.log("_isComposite", topic, this.topicTypes);
-                return topic && this.topicTypes && this.topicTypes[topic.type_uri].isComposite();
+                console.log("_isComposite", topic);
+                return topic && this._getTopicType(topic.type_uri).isComposite();
             },
+
+            _getTopicType: function(typeUri) {
+                return document.createElement("iron-meta").byKey("topicTypes")[typeUri];
+            }
         });
     </script>
 

@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 <link rel="import" href="dm4-toolbar.html">
 <link rel="import" href="dm4-topicmap-panel.html">
 <link rel="import" href="dm4-detail-panel.html">
@@ -20,6 +21,9 @@
     </style>
 
     <template>
+        <iron-meta key="topicTypes" value="{{topicTypes}}"></iron-meta>
+        <iron-meta key="assocTypes" value="{{assocTypes}}"></iron-meta>
+
         <iron-ajax auto url="http://localhost:8080/core/topictype/all" content-type="application/json"
             last-response="{{typeDefs.topicTypes}}">
         </iron-ajax>
@@ -30,7 +34,7 @@
         <dm4-toolbar></dm4-toolbar>
         <div>
             <dm4-topicmap-panel></dm4-topicmap-panel>
-            <dm4-detail-panel topic-types={{topicTypes}} assoc-types={{assocTypes}}></dm4-detail-panel>
+            <dm4-detail-panel></dm4-detail-panel>
         </div>
     </template>
 

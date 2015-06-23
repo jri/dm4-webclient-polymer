@@ -13,7 +13,11 @@
 
             _getTypeName: function(topic) {
                 console.log("_getTypeName", topic);
-                return topic ? this.topicTypes[topic.type_uri].value : "???";
+                return topic ? this._getTopicType(topic.type_uri).value : "???";
+            },
+
+            _getTopicType: function(typeUri) {
+                return document.createElement("iron-meta").byKey("topicTypes")[typeUri];
             }
         });
     </script>

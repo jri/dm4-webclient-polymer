@@ -9,13 +9,11 @@
         <template is="dom-repeat" items="{{_getAssocDefs(topic)}}">
             <template is="dom-if" if="{{_isOne(item)}}" restamp>
                 <div>ONE</div>
-                <dm4-topic-renderer topic="{{_getChildTopic(topic, item)}}" topic-types="{{topicTypes}}">
-                </dm4-topic-renderer>
+                <dm4-topic-renderer topic="{{_getChildTopic(topic, item)}}"></dm4-topic-renderer>
             </template>
             <template is="dom-if" if="{{_isMany(item)}}" restamp>
                 <div>MANY</div>
-                <dm4-multi-renderer topics="{{_getChildTopics(topic, item)}}" topic-types="{{topicTypes}}">
-                </dm4-multi-renderer>
+                <dm4-multi-renderer topics="{{_getChildTopics(topic, item)}}"></dm4-multi-renderer>
             </template>
         </template>
     </template>
@@ -26,7 +24,7 @@
 
             _getAssocDefs: function(topic) {
                 console.log("_getAssocDefs", topic);
-                return topic ? this.topicTypes[topic.type_uri].assocDefs : [];
+                return topic ? this._getTopicType(topic.type_uri).assocDefs : [];
             },
 
             _getChildTopic: function(topic, assocDef) {
@@ -47,6 +45,10 @@
             _isMany: function(assocDef) {
                 console.log("_isMany", assocDef);
                 return assocDef.child_cardinality_uri == "dm4.core.many";
+            },
+
+            _getTopicType: function(typeUri) {
+                return document.createElement("iron-meta").byKey("topicTypes")[typeUri];
             }
         });
     </script>

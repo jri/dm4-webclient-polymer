@@ -5,6 +5,12 @@
 
 <dom-module id="dm4-topic-renderer">
 
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+
     <template>
         <template is="dom-if" if="{{_isSimple(topic)}}" restamp>
             <dm4-simple-renderer topic="{{topic}}"></dm4-simple-renderer>
@@ -18,17 +24,25 @@
         Polymer({
             is: "dm4-topic-renderer",
 
+            properties: {
+
+                /**
+                 * The rendered topic.
+                 */
+                topic: Object
+            },
+
             behaviors: [
                 DM4.Utils
             ],
 
             _isSimple: function(topic) {
-                console.log("_isSimple", topic);
+                // console.log("_isSimple topic", topic);
                 return topic && this.getTopicType(topic.type_uri).isSimple();
             },
 
             _isComposite: function(topic) {
-                console.log("_isComposite", topic);
+                // console.log("_isComposite topic", topic);
                 return topic && this.getTopicType(topic.type_uri).isComposite();
             }
         });

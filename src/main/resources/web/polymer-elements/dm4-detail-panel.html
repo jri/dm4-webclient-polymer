@@ -8,6 +8,8 @@
     <style>
         :host {
             flex: 0 0 25em;
+            padding: 1em;
+            overflow: auto;
             background-color: lightgray;
         }
     </style>
@@ -17,9 +19,7 @@
             content-type="application/json" last-response="{{topic}}">
         </iron-ajax>
 
-        <h2>{{topic.value}}<h2>
-        <h3>{{_getTypeName(topic)}}</h3>
-
+        <h2>{{topic.value}}</h2>
         <dm4-topic-renderer topic="{{topic}}"></dm4-topic-renderer>
     </template>
 
@@ -28,26 +28,29 @@
             is: "dm4-detail-panel",
 
             properties: {
+
+                /**
+                 * ID of the displayed topic.
+                 * Once changed a new topic is loaded and displayed.
+                 */
                 topicId: {
                     type: Number,
                     observer: "_topicIdChanged"
-                }
+                },
+
+                /**
+                 * The displayed topic.
+                 */
+                topic: Object
             },
 
-            behaviors: [
-                DM4.Utils
-            ],
-
             _topicIdChanged: function() {
+                this.topic = null;      // empty detail panel before refilling it
                 this.$.getTopic.generateRequest();
             },
 
             _getURL: function(topicId) {
                 return "http://localhost:8080/core/topic/" + topicId;
-            },
-
-            _getTypeName: function(topic) {
-                return this.getTopicType(topic.type_uri).value;
             }
         });
     </script>

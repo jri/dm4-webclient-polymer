@@ -3,8 +3,13 @@
 
 <dom-module id="dm4-simple-renderer">
 
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+
     <template>
-        <div>Simple</div>
         <span>{{_getTypeName(topic)}}</span>: <span>{{topic.value}}</span>
     </template>
 
@@ -12,13 +17,21 @@
         Polymer({
             is: "dm4-simple-renderer",
 
+            properties: {
+
+                /**
+                 * The rendered topic.
+                 */
+                topic: Object
+            },
+
             behaviors: [
                 DM4.Utils
             ],
 
             _getTypeName: function(topic) {
-                console.log("_getTypeName", topic);
-                return topic ? this.getTopicType(topic.type_uri).value : "???";
+                // console.log("_getTypeName topic", topic);
+                return topic && this.getTopicType(topic.type_uri).value;
             },
         });
     </script>

@@ -5,16 +5,19 @@
 
 <dom-module id="dm4-composite-renderer">
 
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+
     <template>
-        <div>Composite</div>
-        <template is="dom-repeat" items="{{_getAssocDefs(topic)}}">
-            <template is="dom-if" if="{{_isOne(item)}}" restamp>
-                <div>ONE</div>
-                <dm4-topic-renderer topic="{{_getChildTopic(topic, item)}}"></dm4-topic-renderer>
+        <template is="dom-repeat" items="{{_getAssocDefs(topic)}}" as="assocDef">
+            <template is="dom-if" if="{{_isOne(assocDef)}}" restamp>
+                <dm4-topic-renderer topic="{{_getChildTopic(topic, assocDef)}}"></dm4-topic-renderer>
             </template>
-            <template is="dom-if" if="{{_isMany(item)}}" restamp>
-                <div>MANY</div>
-                <dm4-multi-renderer topics="{{_getChildTopics(topic, item)}}"></dm4-multi-renderer>
+            <template is="dom-if" if="{{_isMany(assocDef)}}" restamp>
+                <dm4-multi-renderer topics="{{_getChildTopics(topic, assocDef)}}"></dm4-multi-renderer>
             </template>
         </template>
     </template>
@@ -23,32 +26,40 @@
         Polymer({
             is: "dm4-composite-renderer",
 
+            properties: {
+
+                /**
+                 * The rendered topic.
+                 */
+                topic: Object
+            },
+
             behaviors: [
                 DM4.Utils
             ],
 
             _getAssocDefs: function(topic) {
-                console.log("_getAssocDefs", topic);
-                return topic ? this.getTopicType(topic.type_uri).assocDefs : [];
+                // console.log("_getAssocDefs topic", topic);
+                return topic && this.getTopicType(topic.type_uri).assocDefs;
             },
 
             _getChildTopic: function(topic, assocDef) {
-                console.log("_getChildTopic", topic, assocDef);
-                return topic.childs[assocDef.childTypeUri];
+                // console.log("_getChildTopic topic", topic, "assocDef", assocDef);
+                return topic && topic.childs[assocDef.childTypeUri];
             },
 
             _getChildTopics: function(topic, assocDef) {
-                console.log("_getChildTopics", topic, assocDef);
-                return topic.childs[assocDef.childTypeUri];
+                // console.log("_getChildTopics topic", topic, "assocDef", assocDef);
+                return topic && topic.childs[assocDef.childTypeUri];
             },
 
             _isOne: function(assocDef) {
-                console.log("_isOne", assocDef);
+                // console.log("_isOne assocDef", assocDef);
                 return assocDef.child_cardinality_uri == "dm4.core.one";
             },
 
             _isMany: function(assocDef) {
-                console.log("_isMany", assocDef);
+                // console.log("_isMany assocDef", assocDef);
                 return assocDef.child_cardinality_uri == "dm4.core.many";
             }
         });

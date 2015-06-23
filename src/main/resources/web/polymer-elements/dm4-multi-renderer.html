@@ -3,15 +3,29 @@
 
 <dom-module id="dm4-multi-renderer">
 
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+
     <template>
-        <template is="dom-repeat" items="{{topics}}">
-            <dm4-topic-renderer topic="{{item}}"></dm4-topic-renderer>
+        <template is="dom-repeat" items="{{topics}}" as="topic">
+            <dm4-topic-renderer topic="{{topic}}"></dm4-topic-renderer>
         </template>
     </template>
 
     <script>
         Polymer({
-            is: "dm4-multi-renderer"
+            is: "dm4-multi-renderer",
+
+            properties: {
+
+                /**
+                 * The rendered topics.
+                 */
+                topics: Object
+            }
         });
     </script>
 

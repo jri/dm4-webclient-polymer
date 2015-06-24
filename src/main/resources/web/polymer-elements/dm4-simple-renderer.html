@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="dm4-behaviors.html">
 
 <dom-module id="dm4-simple-renderer">
@@ -22,7 +23,9 @@
 
     <template>
         <div class="label">{{_getTypeName(topic)}}</div>
-        <div class="value">{{topic.value}}</div>
+        <div class="value" hidden="{{editMode}}" on-tap="_beginEdit">{{topic.value}}</div>
+        <paper-input id="input" hidden="{{!editMode}}" on-blur="_finishEdit" value="{{topic.value}}" no-label-float>
+        </paper-input>
     </template>
 
     <script>
@@ -34,12 +37,43 @@
                 /**
                  * The rendered topic.
                  */
-                topic: Object
+                topic: Object,
+
+                /**
+                 * If `true` this renderer is in edit mode.
+                 */
+                editMode: {
+                    type: Boolean,
+                    value: false
+                }
+            },
+
+            listeners: {
+                change: "_save"
             },
 
             behaviors: [
                 DM4.Utils
             ],
+
+            _beginEdit: function(e) {
+                console.log("_beginEdit", this.topic.value);
+                this.editMode = true;
+                this.$.input.inputElement.focus();
+            },
+
+            // Note: _finishEdit() might be called twice but this is no problem.
+            // _finishEdit() is called on blur. _finishEdit() also needs to be called by _save() as the save
+            // might be triggered by Return key which keeps focus.
+            _finishEdit: function(e) {
+                console.log("_finishEdit", this.topic.value);
+                this.editMode = false;
+            },
+
+            _save: function() {
+                console.log("_save topic", this.topic.id, '"' + this.topic.value + '"')
+                this._finishEdit();
+            },
 
             _getTypeName: function(topic) {
                 // console.log("_getTypeName topic", topic);

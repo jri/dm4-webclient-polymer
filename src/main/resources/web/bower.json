@@ -22,6 +22,7 @@
     "paper-menu": "PolymerElements/paper-menu#~1.0.0",
     "paper-item": "PolymerElements/paper-item#~1.0.1",
     "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#~1.0.1",
-    "iron-meta": "PolymerElements/iron-meta#~1.0.3"
+    "iron-meta": "PolymerElements/iron-meta#~1.0.3",
+    "paper-input": "PolymerElements/paper-input#~1.0.5"
   }
 }

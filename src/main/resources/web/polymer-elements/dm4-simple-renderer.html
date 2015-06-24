@@ -26,6 +26,11 @@
         <div class="value" hidden="{{editMode}}" on-tap="_beginEdit">{{topic.value}}</div>
         <paper-input id="input" hidden="{{!editMode}}" on-blur="_finishEdit" value="{{topic.value}}" no-label-float>
         </paper-input>
+        <!-- Possible optimization: instantiate paper-input and iron-ajax component only when it edit mode.  -->
+        <!-- Tried dom-if template but then focusing input in _beginEdit() fails as input is not yet in DOM. -->
+        <iron-ajax id="updateTopic" method="PUT" url="{{_getURL(topic)}}" content-type="application/json"
+            body="{{_getBody(topic.value)}}">
+        </iron-ajax>
     </template>
 
     <script>
@@ -36,6 +41,7 @@
 
                 /**
                  * The rendered topic.
+                 * If `null`/`undefined` nothing is rendered.
                  */
                 topic: Object,
 
@@ -71,14 +77,29 @@
             },
 
             _save: function() {
-                console.log("_save topic", this.topic.id, '"' + this.topic.value + '"')
+                console.log("_save topic", this.topic.id, '"' + this.topic.value + '"');
+                this.$.updateTopic.generateRequest();
                 this._finishEdit();
             },
+
+            // --- Calculated Bindings ---
 
             _getTypeName: function(topic) {
                 // console.log("_getTypeName topic", topic);
                 return topic && this.getTopicType(topic.type_uri).value;
             },
+
+            _getURL: function(topic) {
+                return topic && "http://localhost:8080/core/topic/" + topic.id;
+            },
+
+            _getBody: function(topicValue) {
+                console.log("_getBody() topic value", topicValue);
+                return this.topic && JSON.stringify ({
+                    id: this.topic.id,
+                    value: topicValue
+                });
+            }
         });
     </script>
 

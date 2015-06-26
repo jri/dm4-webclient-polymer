@@ -1,0 +1,14 @@
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
+
+<script>
+    DM4.Utils = {
+
+        getTopicTypes: function() {
+            return document.createElement("iron-meta").byKey("dm4").topicTypes;
+        },
+
+        getTopicType: function(typeUri) {
+            return this.getTopicTypes()[typeUri];
+        }
+    }
+</script>

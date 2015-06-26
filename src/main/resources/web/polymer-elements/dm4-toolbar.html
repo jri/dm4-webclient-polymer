@@ -23,23 +23,36 @@
     <template>
         <!-- Workspaces -->
 
+        <iron-ajax auto url="http://localhost:8080/core/topic/by_type/dm4.workspaces.workspace"
+            content-type="application/json" last-response="{{workspaces}}">
+        </iron-ajax>
+
         Workspace
         <dm4-dropdown-menu label="Workspace">
-            <paper-item>Workspace 1</paper-item>
-            <paper-item>Workspace 2</paper-item>
-            <paper-item>Workspace 3</paper-item>
+            <template is="dom-repeat" items="[[workspaces.items]]">
+                <paper-item>[[item.value]]</paper-item>
+            </template>
         </dm4-dropdown-menu>
 
         <!-- Topicmaps -->
 
         <iron-ajax auto url="http://localhost:8080/core/topic/by_type/dm4.topicmaps.topicmap"
-            headers='{"Content-Type": "application/json"}' last-response="{{topicmaps}}">
+            content-type="application/json" last-response="{{topicmaps}}">
         </iron-ajax>
 
         Topicmap
         <dm4-dropdown-menu label="Topicmap" on-iron-select="_topicmapSelected">
             <template is="dom-repeat" items="[[topicmaps.items]]">
-                <paper-item>{{item.value}}</paper-item>
+                <paper-item>[[item.value]]</paper-item>
+            </template>
+        </dm4-dropdown-menu>
+
+        <!-- Create -->
+
+        Create
+        <dm4-dropdown-menu label="Create" on-iron-select="_createTopic">
+            <template is="dom-repeat" items="[[dm4.topicTypesArray]]">
+                <paper-item>[[item.value]]</paper-item>
             </template>
         </dm4-dropdown-menu>
     </template>
@@ -54,6 +67,11 @@
                 // "dataHost.item" is the original data item.
                 var topicmap = e.detail.item.dataHost.item;
                 this.fire("topicmap-select", {topicmap: topicmap});
+            },
+
+            _createTopic: function(e) {
+                var topicType = e.detail.item.dataHost.item;
+                this.fire("topic-create", {topicType: topicType});
             }
         });
     </script>

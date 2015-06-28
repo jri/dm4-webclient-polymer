@@ -26,8 +26,13 @@
             <dm4-topicmap-panel></dm4-topicmap-panel>
             <dm4-detail-panel></dm4-detail-panel>
         </div>
+
         <dm4-typecache dm4="{{dm4}}"></dm4-typecache>
         <iron-meta key="dm4" value="[[dm4]]"></iron-meta>
+
+        <iron-ajax id="createTopic" method="POST" url="http://localhost:8080/core/topic" content-type="application/json"
+            on-response="_showTopic">
+        </iron-ajax>
     </template>
 
     <script>
@@ -66,6 +71,12 @@
 
             _createTopic: function(e) {
                 console.log("Creating topic of type \"" + e.detail.topicType.uri + "\"");
+                this.$.createTopic.body = JSON.stringify({type_uri: e.detail.topicType.uri});
+                this.$.createTopic.generateRequest();
+            },
+
+            _showTopic: function(e) {
+                console.log("_showTopic" + e);
             }
         });
     </script>

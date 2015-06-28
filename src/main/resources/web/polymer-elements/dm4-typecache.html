@@ -5,10 +5,10 @@
 
     <template>
         <iron-ajax auto url="http://localhost:8080/core/topictype/all" content-type="application/json"
-            last-response="{{dm4.topicTypesArray}}">
+            on-response="_setTopicTypes">
         </iron-ajax>
         <iron-ajax auto url="http://localhost:8080/core/assoctype/all" content-type="application/json"
-            last-response="{{dm4.assocTypesArray}}">
+            on-response="_setAssocTypes">
         </iron-ajax>
     </template>
 
@@ -21,21 +21,36 @@
                 "_hashAssocTypes(dm4.assocTypesArray)"
             ],
 
-            // --- Helper ---
+            // ---
+
+            _setTopicTypes: function(e) {
+                // console.log("_setTopicTypes", e.detail.response);
+                this.set("dm4.topicTypesArray", e.detail.response.map(function(topicType) {
+                    return new DM4.TopicType(topicType);
+                }));
+                
+            },
+
+            _setAssocTypes: function(e) {
+                // console.log("_setAssocTypes", e, e.response, e.detail.response);
+                this.set("dm4.assocTypesArray", e.detail.response.map(function(assocType) {
+                    return new DM4.AssociationType(assocType);
+                }));
+            },
 
             _hashTopicTypes: function(topicTypesArray) {
                 // console.log("_hashTopicTypes", topicTypesArray);
-                this._hash(topicTypesArray, this.dm4.topicTypes, DM4.TopicType);
+                this._hash(topicTypesArray, this.dm4.topicTypes);
             },
 
             _hashAssocTypes: function(assocTypesArray) {
                 // console.log("_hashAssocTypes", assocTypesArray);
-                this._hash(assocTypesArray, this.dm4.assocTypes, DM4.AssociationType);
+                this._hash(assocTypesArray, this.dm4.assocTypes);
             },
 
-            _hash: function(array, object, constructor) {
+            _hash: function(array, object) {
                 for (var i = 0, item; item = array[i]; i++) {
-                    object[item.uri] = new constructor(item);
+                    object[item.uri] = item;
                 }
             }
         });

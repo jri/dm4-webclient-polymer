@@ -12,6 +12,8 @@
             display: none;
             position: absolute;
             border: 1px solid lightgray;
+            overflow: auto;
+            box-sizing: border-box;
         }
     </style>
 
@@ -30,8 +32,11 @@
 
             _buttonTap: function(e) {
                 if (this.$.button.active) {
-                    this.$.menu.style.left = this.$.button.getBoundingClientRect().left + "px";
                     this._showMenu();
+                    // adjust menu position and height
+                    this.$.menu.style.left = this.$.button.getBoundingClientRect().left + "px";
+                    this.$.menu.style["max-height"] = document.body.getBoundingClientRect().height -
+                                                        this.$.menu.getBoundingClientRect().top + "px";
                 } else {
                     this._hideMenu();
                 }

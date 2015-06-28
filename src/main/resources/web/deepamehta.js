@@ -27,7 +27,7 @@ DM4 = {
             this.indexModeUris    = type.index_mode_uris;
             this.assocDefs        = DM4._initAssocDefs(type.assoc_defs);
             this.labelConfig      = type.label_config;
-            this.viewConfigTopics = type.view_config_topics;
+            this.viewConfigTopics = DM4.hashByType(type.view_config_topics);
         }
     },
 
@@ -56,6 +56,14 @@ DM4 = {
             }
         }
         return childTopics
+    },
+
+    hashByType: function(topics) {
+        var hashedTopics = {}
+        for (var i = 0, topic; topic = topics[i]; i++) {
+            hashedTopics[topic.type_uri] = topic
+        }
+        return hashedTopics
     },
 
     _initAssocDefs: function(assocDefs) {
@@ -90,6 +98,12 @@ DM4.Type.prototype = {
 
     isComposite: function() {
         return this.dataTypeUri == "dm4.core.composite";
+    },
+
+    getViewConfig: function(viewConfigTypeUri, childTypeUri) {
+        var viewConfigTopic = this.viewConfigTopics[viewConfigTypeUri];
+        var childTopic = viewConfigTopic && viewConfigTopic.childs[childTypeUri];
+        return childTopic && childTopic.value;
     }
 }
 

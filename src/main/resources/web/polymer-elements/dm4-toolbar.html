@@ -52,7 +52,9 @@
         Create
         <dm4-dropdown-menu label="Create" on-iron-select="_createTopic">
             <template is="dom-repeat" items="[[dm4.topicTypesArray]]">
-                <paper-item>[[item.value]]</paper-item>
+                <template is="dom-if" if="{{_showInCreateMenu(item)}}">
+                    <paper-item>[[item.value]]</paper-item>
+                </template>
             </template>
         </dm4-dropdown-menu>
     </template>
@@ -72,6 +74,10 @@
             _createTopic: function(e) {
                 var topicType = e.detail.item.dataHost.item;
                 this.fire("topic-create", {topicType: topicType});
+            },
+
+            _showInCreateMenu: function(topicType) {
+                return topicType.getViewConfig("dm4.webclient.view_config", "dm4.webclient.show_in_create_menu");
             }
         });
     </script>

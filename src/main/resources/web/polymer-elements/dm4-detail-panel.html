@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="dm4-topic-renderer.html">
+<link rel="import" href="dm4-utils.html">
 
 <dom-module id="dm4-detail-panel">
 
@@ -53,11 +54,60 @@
                 }
             },
 
+            behaviors: [
+                DM4.Utils
+            ],
+
             showForm: function(topic) {
                 this.topic = null;
                 //
                 this.formMode = true;
                 this.topic = topic;
+            },
+
+            finishEdit: function() {
+                this.formMode = false;
+            },
+
+            buildTopicModel: function() {
+                return this._buildTopicModel(this.topic);
+            },
+
+            _buildTopicModel: function(topic) {
+                var topicType = this.getTopicType(topic.type_uri);
+                if (topicType.isSimple()) {
+                    if (this._isDirty(topic)) {
+                        console.log(this.getTopicType(topic.type_uri).value, topic.value, topic.oldValue, "--> dirty");
+                        return {
+                            id: topic.id,
+                            value: topic.value
+                        }
+                    }
+                } else {
+                    var childs = null;
+                    var self = this;
+                    topicType.assocDefs.forEach(function(assocDef) {
+                        var childTypeUri = assocDef.childTypeUri;
+                        var childTopic = topic.childs[childTypeUri];
+                        var value = self._buildTopicModel(childTopic);
+                        if (value) {
+                            if (!childs) {
+                                childs = {};
+                            }
+                            childs[childTypeUri] = value;
+                        }
+                    })
+                    if (childs) {
+                        return {
+                            id: topic.id,
+                            childs: childs
+                        }
+                    }
+                }
+            },
+
+            _isDirty: function(topic) {
+                return topic.value != topic.oldValue;
             },
 
             _topicIdChanged: function() {

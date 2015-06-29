@@ -56,11 +56,8 @@
                 var childTypeUri = assocDef.childTypeUri;
                 var childTopic = topic && topic.childs[childTypeUri];
                 if (!childTopic && this.formMode) {
-                    childTopic = {
-                        id: -1,
-                        type_uri: childTypeUri,
-                        childs: {}
-                    }
+                    childTopic = this._createEmptyTopic(childTypeUri);
+                    topic.childs[childTypeUri] = childTopic;
                 }
                 // console.log("_getChildTopic topic", topic, "childTypeUri", childTypeUri, "-->", childTopic);
                 return childTopic;
@@ -71,16 +68,20 @@
                 var childTypeUri = assocDef.childTypeUri;
                 var childTopics = topic && topic.childs[childTypeUri];
                 if ((!childTopics || childTopics.length == 0) && this.formMode) {
-                    childTopics = [
-                        {
-                            id: -1,
-                            type_uri: childTypeUri,
-                            childs: {}
-                        }
-                    ]
+                    childTopics = [this._createEmptyTopic(childTypeUri)];
+                    topic.childs[childTypeUri] = childTopics;
                 }
                 // console.log("_getChildTopic topic", topic, "childTypeUri", childTypeUri, "-->", childTopics);
                 return childTopics;
+            },
+
+            _createEmptyTopic: function(typeUri) {
+                return {
+                    id: -1,
+                    type_uri: typeUri,
+                    value: "",
+                    childs: {}
+                }
             },
 
             _isOne: function(assocDef) {

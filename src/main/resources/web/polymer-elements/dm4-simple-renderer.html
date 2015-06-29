@@ -74,9 +74,6 @@
                 }
             },
 
-            // Note: _finishEdit() might be called twice but this is no problem. ### still true?
-            // _finishEdit() is called on blur. _finishEdit() also needs to be called by _save() as the save
-            // might be triggered by Return key which keeps focus.
             _blurred: function(e) {
                 // Saving (dm4-webclient) calls finishEdit() and causes a blur (again).
                 // We must not fire again.

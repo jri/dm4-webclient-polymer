@@ -81,20 +81,28 @@
                 if (this.$$("dm4-detail-panel").formMode) {
                     if (e.detail.submit) {
                         console.log("Saving entire form");
+                        var topicModel = this.$$("dm4-detail-panel").buildTopicModel();
+                        console.log(topicModel);
+                        this._updateTopic(topicModel);
+                        this.$$("dm4-detail-panel").finishEdit();
                     } else {
                         console.log("_topicEdited --> ignoring");
                     }
                 } else {
                     var topic = e.detail.topic;
                     console.log("Saving single topic", topic.id, '"' + topic.value + '"', e);
-                    this.$.updateTopic.url = "http://localhost:8080/core/topic/" + topic.id;
-                    this.$.updateTopic.body = JSON.stringify ({
+                    this._updateTopic({
                         id: topic.id,
                         value: topic.value
-                    })
-                    this.$.updateTopic.generateRequest();
+                    });
                     e.target.finishEdit();
                 }
+            },
+
+            _updateTopic: function(topic) {
+                this.$.updateTopic.url = "http://localhost:8080/core/topic/" + topic.id;
+                this.$.updateTopic.body = JSON.stringify(topic);
+                this.$.updateTopic.generateRequest();
             },
 
             _showTopic: function(e) {

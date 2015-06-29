@@ -39,7 +39,7 @@ DM4 = {
         DM4.Type.call(this, assocType);
     },
 
-    // --- Utilities ---
+    // === DM Utilities ===
 
     buildChildTopics: function(childs) {
         // console.log("DM4.buildChildTopics", childs);
@@ -74,7 +74,21 @@ DM4 = {
             assocDef.childTypeUri  = assoc.getRole("dm4.core.child_type").topic_uri;
         }
         return assocDefs;
-    }
+    },
+
+    // === Javascript Utilities ===
+
+    /* size: function(object) {
+        var size = 0
+        for (var key in object) {
+            size++
+        }
+        return size
+    },
+
+    isEmpty: function(object) {
+        return this.size(object) == 0;
+    } */
 }
 
 DM4.Association.prototype = {

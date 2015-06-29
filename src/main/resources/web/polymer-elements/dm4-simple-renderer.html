@@ -23,14 +23,12 @@
 
     <template>
         <div class="label">{{_getTypeName(topic)}}</div>
-        <div class="value" hidden="{{editMode}}" on-tap="_beginEdit">{{topic.value}}</div>
-        <paper-input id="input" hidden="{{!editMode}}" on-blur="_finishEdit" value="{{topic.value}}" no-label-float>
+        <div class="value" hidden="{{formMode}}" on-tap="_beginEdit">{{topic.value}}</div>
+        <paper-input id="input" hidden="{{!formMode}}" on-keypress="_keyPressed" on-blur="_blurred"
+            value="{{topic.value}}" no-label-float>
         </paper-input>
-        <!-- Possible optimization: instantiate paper-input and iron-ajax component only when it edit mode.  -->
+        <!-- Possible optimization: instantiate paper-input component only when it edit mode.                -->
         <!-- Tried dom-if template but then focusing input in _beginEdit() fails as input is not yet in DOM. -->
-        <iron-ajax id="updateTopic" method="PUT" url="{{_getURL(topic)}}" content-type="application/json"
-            body="{{_getBody(topic.value)}}">
-        </iron-ajax>
     </template>
 
     <script>
@@ -43,19 +41,16 @@
                  * The rendered topic.
                  * If `null`/`undefined` nothing is rendered.
                  */
-                topic: Object,
+                topic: {
+                    type: Object
+                },
 
                 /**
-                 * If `true` this renderer is in edit mode.
+                 * If `true` a form field for the simple topic is rendered.
                  */
-                editMode: {
-                    type: Boolean,
-                    value: false
+                formMode: {
+                    type: Boolean
                 }
-            },
-
-            listeners: {
-                change: "_save"
             },
 
             behaviors: [
@@ -64,22 +59,40 @@
 
             _beginEdit: function(e) {
                 console.log("_beginEdit", this.topic.value);
-                this.editMode = true;
+                this.formMode = true;
                 this.$.input.inputElement.focus();
             },
 
-            // Note: _finishEdit() might be called twice but this is no problem.
-            // _finishEdit() is called on blur. _finishEdit() also needs to be called by _save() as the save
-            // might be triggered by Return key which keeps focus.
-            _finishEdit: function(e) {
-                console.log("_finishEdit", this.topic.value);
-                this.editMode = false;
+            finishEdit: function() {
+                this.formMode = false;
             },
 
-            _save: function() {
-                console.log("_save topic", this.topic.id, '"' + this.topic.value + '"');
-                this.$.updateTopic.generateRequest();
-                this._finishEdit();
+            _keyPressed: function(e) {
+                // console.log("_keyPressed", e.charCode);
+                if (e.charCode == 13) {
+                    this._fire(true);
+                }
+            },
+
+            // Note: _finishEdit() might be called twice but this is no problem. ### still true?
+            // _finishEdit() is called on blur. _finishEdit() also needs to be called by _save() as the save
+            // might be triggered by Return key which keeps focus.
+            _blurred: function(e) {
+                // Saving (dm4-webclient) calls finishEdit() and causes a blur (again).
+                // We must not fire again.
+                if (this.formMode) {
+                    console.log("_blurred", this.topic.value);
+                    this._fire(false);
+                } else {
+                    console.log("_blurred", this.topic.value, "--> ignoring");
+                }
+            },
+
+            _fire: function(submit) {
+                this.fire("topic-edit", {
+                    topic: this.topic,
+                    submit: submit
+                });
             },
 
             // --- Calculated Bindings ---
@@ -87,18 +100,6 @@
             _getTypeName: function(topic) {
                 // console.log("_getTypeName topic", topic);
                 return topic && this.getTopicType(topic.type_uri).value;
-            },
-
-            _getURL: function(topic) {
-                return topic && "http://localhost:8080/core/topic/" + topic.id;
-            },
-
-            _getBody: function(topicValue) {
-                console.log("_getBody() topic value", topicValue);
-                return this.topic && JSON.stringify ({
-                    id: this.topic.id,
-                    value: topicValue
-                });
             }
         });
     </script>

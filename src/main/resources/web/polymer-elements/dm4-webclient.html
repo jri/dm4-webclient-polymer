@@ -33,6 +33,7 @@
         <iron-ajax id="createTopic" method="POST" url="http://localhost:8080/core/topic" content-type="application/json"
             on-response="_showTopic">
         </iron-ajax>
+        <iron-ajax id="updateTopic" method="PUT" content-type="application/json"></iron-ajax>
     </template>
 
     <script>
@@ -58,7 +59,8 @@
             listeners: {
                 "topic-select": "_topicSelected",
                 "topicmap-select": "_topicmapSelected",
-                "topic-create": "_createTopic"
+                "topic-create": "_createTopic",
+                "topic-edit": "_topicEdited"
             },
 
             _topicSelected: function(e) {
@@ -75,8 +77,30 @@
                 this.$.createTopic.generateRequest();
             },
 
+            _topicEdited: function(e) {
+                if (this.$$("dm4-detail-panel").formMode) {
+                    if (e.detail.submit) {
+                        console.log("Saving entire form");
+                    } else {
+                        console.log("_topicEdited --> ignoring");
+                    }
+                } else {
+                    var topic = e.detail.topic;
+                    console.log("Saving single topic", topic.id, '"' + topic.value + '"', e);
+                    this.$.updateTopic.url = "http://localhost:8080/core/topic/" + topic.id;
+                    this.$.updateTopic.body = JSON.stringify ({
+                        id: topic.id,
+                        value: topic.value
+                    })
+                    this.$.updateTopic.generateRequest();
+                    e.target.finishEdit();
+                }
+            },
+
             _showTopic: function(e) {
-                console.log("_showTopic" + e);
+                var topic = e.detail.response;
+                this.$$("dm4-topicmap-panel").showTopic(topic);
+                this.$$("dm4-detail-panel").showForm(topic);
             }
         });
     </script>

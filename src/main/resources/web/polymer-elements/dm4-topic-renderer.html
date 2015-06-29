@@ -13,10 +13,10 @@
 
     <template>
         <template is="dom-if" if="{{_isSimple(topic)}}" restamp>
-            <dm4-simple-renderer topic="{{topic}}"></dm4-simple-renderer>
+            <dm4-simple-renderer topic="{{topic}}" form-mode="{{formMode}}"></dm4-simple-renderer>
         </template>
         <template is="dom-if" if="{{_isComposite(topic)}}" restamp>
-            <dm4-composite-renderer topic="{{topic}}"></dm4-composite-renderer>
+            <dm4-composite-renderer topic="{{topic}}" form-mode="{{formMode}}"></dm4-composite-renderer>
         </template>
     </template>
 

@@ -27,9 +27,28 @@
             is: "dm4-topicmap-panel",
 
             properties: {
+
+                /**
+                 * ID of the displayed topicmap.
+                 * Change to load another topicmap.
+                 */
                 topicmapId: {
                     type: Number,
                     observer: "_topicmapIdChanged"
+                },
+
+                /**
+                 * The displayed topicmap.
+                 */
+                topicmap: {
+                    type: Object
+                },
+
+                /**
+                 * The current size of this topicmap panel.
+                 */
+                size: {
+                    type: Object
                 }
             },
 
@@ -39,6 +58,16 @@
 
             listeners: {
                 "iron-resize": "_panelResized"
+            },
+
+            showTopic: function(topic) {
+                topic.view_props = {
+                    "dm4.topicmaps.x": this.size.width  * Math.random(),
+                    "dm4.topicmaps.y": this.size.height * Math.random(),
+                    "dm4.topicmaps.visibility": true
+                };
+                console.log("showTopic", topic);
+                this.push("topicmap.topics", topic);
             },
 
             _topicmapIdChanged: function() {

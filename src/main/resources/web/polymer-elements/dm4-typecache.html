@@ -25,7 +25,8 @@
 
             _setTopicTypes: function(e) {
                 // console.log("_setTopicTypes", e.detail.response);
-                this.set("dm4.topicTypesArray", e.detail.response.map(function(topicType) {
+                var topicTypes = e.detail.response;
+                this.set("dm4.topicTypesArray", topicTypes.map(function(topicType) {
                     return new DM4.TopicType(topicType);
                 }));
                 
@@ -33,7 +34,8 @@
 
             _setAssocTypes: function(e) {
                 // console.log("_setAssocTypes", e, e.response, e.detail.response);
-                this.set("dm4.assocTypesArray", e.detail.response.map(function(assocType) {
+                var assocTypes = e.detail.response;
+                this.set("dm4.assocTypesArray", assocTypes.map(function(assocType) {
                     return new DM4.AssociationType(assocType);
                 }));
             },

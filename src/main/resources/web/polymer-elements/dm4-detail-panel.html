@@ -19,7 +19,7 @@
         </iron-ajax>
 
         <h2>{{topic.value}}</h2>
-        <dm4-topic-renderer topic="{{topic}}"></dm4-topic-renderer>
+        <dm4-topic-renderer topic="{{topic}}" form-mode="{{formMode}}"></dm4-topic-renderer>
     </template>
 
     <script>
@@ -40,7 +40,24 @@
                 /**
                  * The displayed topic.
                  */
-                topic: Object
+                topic: {
+                    type: Object
+                },
+
+                /**
+                 * If `true` a form for the displayed topic is rendered.
+                 */
+                formMode: {
+                    type: Boolean,
+                    value: false
+                }
+            },
+
+            showForm: function(topic) {
+                this.topic = null;
+                //
+                this.formMode = true;
+                this.topic = topic;
             },
 
             _topicIdChanged: function() {

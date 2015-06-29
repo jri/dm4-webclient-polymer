@@ -14,10 +14,12 @@
     <template>
         <template is="dom-repeat" items="{{_getAssocDefs(topic)}}" as="assocDef">
             <template is="dom-if" if="{{_isOne(assocDef)}}" restamp>
-                <dm4-topic-renderer topic="{{_getChildTopic(topic, assocDef)}}"></dm4-topic-renderer>
+                <dm4-topic-renderer topic="{{_getChildTopic(topic, assocDef)}}" form-mode="{{formMode}}">
+                </dm4-topic-renderer>
             </template>
             <template is="dom-if" if="{{_isMany(assocDef)}}" restamp>
-                <dm4-multi-renderer topics="{{_getChildTopics(topic, assocDef)}}"></dm4-multi-renderer>
+                <dm4-multi-renderer topics="{{_getChildTopics(topic, assocDef)}}" form-mode="{{formMode}}">
+                </dm4-multi-renderer>
             </template>
         </template>
     </template>
@@ -29,9 +31,16 @@
             properties: {
 
                 /**
-                 * The rendered topic.
+                 * The rendered composite topic.
                  */
-                topic: Object
+                topic: Object,
+
+                /**
+                 * If `true` a form for the composite topic is rendered.
+                 */
+                 formMode: {
+                     type: Boolean
+                 }
             },
 
             behaviors: [
@@ -44,13 +53,34 @@
             },
 
             _getChildTopic: function(topic, assocDef) {
-                // console.log("_getChildTopic topic", topic, "assocDef", assocDef);
-                return topic && topic.childs[assocDef.childTypeUri];
+                var childTypeUri = assocDef.childTypeUri;
+                var childTopic = topic && topic.childs[childTypeUri];
+                if (!childTopic && this.formMode) {
+                    childTopic = {
+                        id: -1,
+                        type_uri: childTypeUri,
+                        childs: {}
+                    }
+                }
+                // console.log("_getChildTopic topic", topic, "childTypeUri", childTypeUri, "-->", childTopic);
+                return childTopic;
             },
 
             _getChildTopics: function(topic, assocDef) {
                 // console.log("_getChildTopics topic", topic, "assocDef", assocDef);
-                return topic && topic.childs[assocDef.childTypeUri];
+                var childTypeUri = assocDef.childTypeUri;
+                var childTopics = topic && topic.childs[childTypeUri];
+                if ((!childTopics || childTopics.length == 0) && this.formMode) {
+                    childTopics = [
+                        {
+                            id: -1,
+                            type_uri: childTypeUri,
+                            childs: {}
+                        }
+                    ]
+                }
+                // console.log("_getChildTopic topic", topic, "childTypeUri", childTypeUri, "-->", childTopics);
+                return childTopics;
             },
 
             _isOne: function(assocDef) {

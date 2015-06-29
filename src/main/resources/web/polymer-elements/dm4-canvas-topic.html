@@ -24,6 +24,23 @@
         Polymer({
             is: "dm4-canvas-topic",
 
+            properties: {
+
+                /**
+                 * The rendered topic.
+                 */
+                topic: {
+                    type: Object
+                },
+
+                /**
+                 * If `true` this topic is selected.
+                 */
+                selected: {
+                    type: Boolean
+                }
+            },
+
             listeners: {
                 "tap": "_topicTap",
                 "track": "_topicTrack"

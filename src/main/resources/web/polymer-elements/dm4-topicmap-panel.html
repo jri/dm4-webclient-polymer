@@ -18,7 +18,7 @@
         <iron-ajax id="getTopicmap" url="{{_getURL(topicmapId)}}"
             headers='{"Content-Type": "application/json", "Accept": "application/json"}' last-response="{{topicmap}}">
         </iron-ajax>
-        <dm4-canvas-renderer topicmap={{topicmap}} size="{{size}}">
+        <dm4-canvas-renderer topicmap="[[topicmap]]" size="[[size]]" dm4="[[dm4]]">
         </dm4-canvas-renderer>
     </template>
 

@@ -78,6 +78,17 @@ DM4 = {
 
     // === Javascript Utilities ===
 
+    /**
+     * Returns true if the array contains the object.
+     */
+    contains: function(array, object) {
+        for (var i = 0; i < array.length; i++) {
+            if (array[i] == object) {
+                return true
+            }
+        }
+    },
+
     /* size: function(object) {
         var size = 0
         for (var key in object) {

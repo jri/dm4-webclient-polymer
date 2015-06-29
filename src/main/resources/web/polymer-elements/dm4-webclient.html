@@ -23,7 +23,7 @@
     <template>
         <dm4-toolbar dm4="[[dm4]]"></dm4-toolbar>
         <div>
-            <dm4-topicmap-panel></dm4-topicmap-panel>
+            <dm4-topicmap-panel dm4="[[dm4]]"></dm4-topicmap-panel>
             <dm4-detail-panel></dm4-detail-panel>
         </div>
 
@@ -48,26 +48,31 @@
                 dm4: {
                     type: Object,
                     value: {
+                        // types
                         topicTypesArray: [],
                         assocTypesArray: [],
                         topicTypes: {},
-                        assocTypes: {}
+                        assocTypes: {},
+                        // selection model
+                        selectedTopicIds: []
                     }
                 }
             },
 
             listeners: {
-                "topic-select": "_topicSelected",
-                "topicmap-select": "_topicmapSelected",
-                "topic-create": "_createTopic",
-                "topic-edit": "_topicEdited"
+                "topic-select":    "_selectTopic",
+                "topicmap-select": "_selectTopicmap",
+                "topic-create":    "_createTopic",
+                "topic-edit":      "_updateTopic"
             },
 
-            _topicSelected: function(e) {
-                this.$$("dm4-detail-panel").topicId = e.detail.topic.id;
+            _selectTopic: function(e) {
+                var topicId = e.detail.topic.id;
+                this.set("dm4.selectedTopicIds", [topicId]);
+                this.$$("dm4-detail-panel").topicId = topicId;
             },
 
-            _topicmapSelected: function(e) {
+            _selectTopicmap: function(e) {
                 this.$$("dm4-topicmap-panel").topicmapId = e.detail.topicmap.id;
             },
 
@@ -77,21 +82,21 @@
                 this.$.createTopic.generateRequest();
             },
 
-            _topicEdited: function(e) {
+            _updateTopic: function(e) {
                 if (this.$$("dm4-detail-panel").formMode) {
                     if (e.detail.submit) {
                         console.log("Saving entire form");
                         var topicModel = this.$$("dm4-detail-panel").buildTopicModel();
                         console.log(topicModel);
-                        this._updateTopic(topicModel);
+                        this.__updateTopic(topicModel);
                         this.$$("dm4-detail-panel").finishEdit();
                     } else {
-                        console.log("_topicEdited --> ignoring");
+                        console.log("_updateTopic --> ignoring");
                     }
                 } else {
                     var topic = e.detail.topic;
                     console.log("Saving single topic", topic.id, '"' + topic.value + '"', e);
-                    this._updateTopic({
+                    this.__updateTopic({
                         id: topic.id,
                         value: topic.value
                     });
@@ -99,7 +104,7 @@
                 }
             },
 
-            _updateTopic: function(topic) {
+            __updateTopic: function(topic) {
                 this.$.updateTopic.url = "http://localhost:8080/core/topic/" + topic.id;
                 this.$.updateTopic.body = JSON.stringify(topic);
                 this.$.updateTopic.generateRequest();

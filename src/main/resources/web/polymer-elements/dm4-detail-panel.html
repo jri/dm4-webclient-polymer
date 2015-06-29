@@ -88,13 +88,29 @@
                     var self = this;
                     topicType.assocDefs.forEach(function(assocDef) {
                         var childTypeUri = assocDef.childTypeUri;
-                        var childTopic = topic.childs[childTypeUri];
-                        var value = self._buildTopicModel(childTopic);
-                        if (value) {
-                            if (!childs) {
-                                childs = {};
+                        if (self._isMany(assocDef)) {
+                            var childTopics = topic.childs[childTypeUri];
+                            childTopics.forEach(function(childTopic) {
+                                var value = self._buildTopicModel(childTopic);
+                                if (value) {
+                                    if (!childs) {
+                                        childs = {};
+                                    }
+                                    if (!childs[childTypeUri]) {
+                                        childs[childTypeUri] = [];
+                                    }
+                                    childs[childTypeUri].push(value);
+                                }
+                            })
+                        } else {
+                            var childTopic = topic.childs[childTypeUri];
+                            var value = self._buildTopicModel(childTopic);
+                            if (value) {
+                                if (!childs) {
+                                    childs = {};
+                                }
+                                childs[childTypeUri] = value;
                             }
-                            childs[childTypeUri] = value;
                         }
                     })
                     if (childs) {
@@ -108,6 +124,10 @@
 
             _isDirty: function(topic) {
                 return topic.value != topic.oldValue;
+            },
+
+            _isMany: function(assocDef) {
+                return assocDef.child_cardinality_uri == "dm4.core.many";
             },
 
             _topicIdChanged: function() {

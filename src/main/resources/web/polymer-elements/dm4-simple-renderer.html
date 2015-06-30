@@ -42,7 +42,8 @@
                  * If `null`/`undefined` nothing is rendered.
                  */
                 topic: {
-                    type: Object
+                    type: Object,
+                    observer: "_initTopic"
                 },
 
                 /**
@@ -57,14 +58,25 @@
                 DM4.Utils
             ],
 
+            // ---------------------------------------------------------------------------------------------- Public API
+
+            finishEdit: function() {
+                this.formMode = false;
+            },
+
+            // --------------------------------------------------------------------------------------------- Private API
+
+            _initTopic: function(topic) {
+                if (topic && this.formMode) {
+                    // console.log("_initTopic", topic);
+                    topic.oldValue = topic.value;
+                }
+            },
+
             _beginEdit: function(e) {
                 console.log("_beginEdit", this.topic.value);
                 this.formMode = true;
                 this.$.input.inputElement.focus();
-            },
-
-            finishEdit: function() {
-                this.formMode = false;
             },
 
             _keyPressed: function(e) {

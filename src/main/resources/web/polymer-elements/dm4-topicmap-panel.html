@@ -1,5 +1,4 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="dm4-canvas-renderer.html">
 
@@ -15,9 +14,6 @@
     </style>
 
     <template>
-        <iron-ajax id="getTopicmap" url="{{_getURL(topicmapId)}}"
-            headers='{"Content-Type": "application/json", "Accept": "application/json"}' last-response="{{topicmap}}">
-        </iron-ajax>
         <dm4-canvas-renderer topicmap="[[topicmap]]" size="[[size]]" dm4="[[dm4]]">
         </dm4-canvas-renderer>
     </template>
@@ -27,15 +23,6 @@
             is: "dm4-topicmap-panel",
 
             properties: {
-
-                /**
-                 * ID of the displayed topicmap.
-                 * Change to load another topicmap.
-                 */
-                topicmapId: {
-                    type: Number,
-                    observer: "_topicmapIdChanged"
-                },
 
                 /**
                  * The displayed topicmap.
@@ -49,6 +36,14 @@
                  */
                 size: {
                     type: Object
+                },
+
+                /**
+                 * Global state.
+                 * See `dm4-webclient`.
+                 */
+                dm4: {
+                    type: Object
                 }
             },
 
@@ -60,29 +55,37 @@
                 "iron-resize": "_panelResized"
             },
 
-            showTopic: function(topic) {
+            // ---------------------------------------------------------------------------------------------- Public API
+
+            showTopic: function(topic, select) {
                 topic.view_props = {
                     "dm4.topicmaps.x": this.size.width  * Math.random(),
                     "dm4.topicmaps.y": this.size.height * Math.random(),
                     "dm4.topicmaps.visibility": true
                 };
-                console.log("showTopic", topic);
+                // console.log("showTopic", topic);
                 this.push("topicmap.topics", topic);
+                //
+                if (select) {
+                    this.setSelectedTopic(topic.id);
+                }
             },
 
-            _topicmapIdChanged: function() {
-                this.$.getTopicmap.generateRequest();
+            setSelectedTopic: function(topicId) {
+                this.set("dm4.selectedTopicIds", [topicId]);
             },
+
+            showTopicmap: function(topicmap) {
+                this.topicmap = topicmap;
+            },
+
+            // --------------------------------------------------------------------------------------------- Private API
 
             _panelResized: function(e) {
                 this.size = {
                     width: this.clientWidth,
                     height: this.clientHeight
                 }
-            },
-
-            _getURL: function(topicmapId) {
-                return "http://localhost:8080/topicmap/" + topicmapId
             }
         });
     </script>

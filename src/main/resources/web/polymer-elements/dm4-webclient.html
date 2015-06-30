@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 <link rel="import" href="dm4-toolbar.html">
 <link rel="import" href="dm4-topicmap-panel.html">
@@ -23,8 +24,8 @@
     <template>
         <dm4-toolbar dm4="[[dm4]]"></dm4-toolbar>
         <div>
-            <dm4-topicmap-panel dm4="[[dm4]]"></dm4-topicmap-panel>
-            <dm4-detail-panel></dm4-detail-panel>
+            <dm4-topicmap-panel id="topicmapPanel" dm4="[[dm4]]"></dm4-topicmap-panel>
+            <dm4-detail-panel id="detailPanel"></dm4-detail-panel>
         </div>
 
         <dm4-typecache dm4="{{dm4}}"></dm4-typecache>
@@ -33,7 +34,13 @@
         <iron-ajax id="createTopic" method="POST" url="http://localhost:8080/core/topic" content-type="application/json"
             on-response="_showTopic">
         </iron-ajax>
+        <iron-ajax id="getTopic" params='{"include_childs": true}' content-type="application/json"
+            on-response="_showTopicInDetailPanel">
+        </iron-ajax>
         <iron-ajax id="updateTopic" method="PUT" content-type="application/json"></iron-ajax>
+        <iron-ajax id="getTopicmap" headers='{"Content-Type": "application/json", "Accept": "application/json"}'
+            on-response="_showTopicmap">
+        </iron-ajax>
     </template>
 
     <script>
@@ -66,54 +73,89 @@
                 "topic-edit":      "_updateTopic"
             },
 
+            // --------------------------------------------------------------------------------------------- Private API
+
+            // === Event Handler ===
+
             _selectTopic: function(e) {
                 var topicId = e.detail.topic.id;
-                this.set("dm4.selectedTopicIds", [topicId]);
-                this.$$("dm4-detail-panel").topicId = topicId;
+                this.$.topicmapPanel.setSelectedTopic(topicId);
+                this.$.detailPanel.clear();
+                this.__getTopic(topicId);
             },
 
             _selectTopicmap: function(e) {
-                this.$$("dm4-topicmap-panel").topicmapId = e.detail.topicmap.id;
+                var topicmapId = e.detail.topicmap.id;
+                this.__getTopicmap(topicmapId);
             },
 
             _createTopic: function(e) {
-                console.log("Creating topic of type \"" + e.detail.topicType.uri + "\"");
-                this.$.createTopic.body = JSON.stringify({type_uri: e.detail.topicType.uri});
-                this.$.createTopic.generateRequest();
+                var topicTypeUri = e.detail.topicType.uri;
+                // console.log("Creating topic of type \"" + topicTypeUri + "\"");
+                this.$.detailPanel.clear();
+                this.__createTopic(topicTypeUri);
             },
 
             _updateTopic: function(e) {
-                if (this.$$("dm4-detail-panel").formMode) {
+                if (this.$.detailPanel.formMode) {
                     if (e.detail.submit) {
                         console.log("Saving entire form");
-                        var topicModel = this.$$("dm4-detail-panel").buildTopicModel();
-                        console.log(topicModel);
+                        var topicModel = this.$.detailPanel.buildTopicModel();
+                        console.log("update model", topicModel);
                         this.__updateTopic(topicModel);
-                        this.$$("dm4-detail-panel").finishEdit();
+                        this.$.detailPanel.finishEdit();
                     } else {
                         console.log("_updateTopic --> ignoring");
                     }
                 } else {
                     var topic = e.detail.topic;
                     console.log("Saving single topic", topic.id, '"' + topic.value + '"', e);
-                    this.__updateTopic({
-                        id: topic.id,
-                        value: topic.value
-                    });
+                    var topicModel = this.$.detailPanel.buildTopicModel(topic);
+                    console.log("update model", topicModel);
+                    this.__updateTopic(topicModel);
                     e.target.finishEdit();
                 }
             },
 
-            __updateTopic: function(topic) {
-                this.$.updateTopic.url = "http://localhost:8080/core/topic/" + topic.id;
-                this.$.updateTopic.body = JSON.stringify(topic);
-                this.$.updateTopic.generateRequest();
-            },
-
             _showTopic: function(e) {
                 var topic = e.detail.response;
-                this.$$("dm4-topicmap-panel").showTopic(topic);
-                this.$$("dm4-detail-panel").showForm(topic);
+                this.$.topicmapPanel.showTopic(topic, true);   // select=true
+                this.$.detailPanel.showForm(topic);
+            },
+
+            _showTopicInDetailPanel: function(e) {
+                var topic = e.detail.response;
+                this.$.detailPanel.showTopic(topic);
+            },
+
+            _showTopicmap: function(e) {
+                var topicmap = e.detail.response;
+                this.$.topicmapPanel.showTopicmap(topicmap);
+            },
+
+            // === Requests ===
+
+            __getTopic: function(topicId) {
+                this.$.getTopic.url = "http://localhost:8080/core/topic/" + topicId;
+                this.$.getTopic.generateRequest();
+            },
+
+            __createTopic: function(topicTypeUri) {
+                this.$.createTopic.body = JSON.stringify({type_uri: topicTypeUri});
+                this.$.createTopic.generateRequest();
+            },
+
+            __updateTopic: function(topic) {
+                if (topic) {
+                    this.$.updateTopic.url = "http://localhost:8080/core/topic/" + topic.id;
+                    this.$.updateTopic.body = JSON.stringify(topic);
+                    this.$.updateTopic.generateRequest();
+                }
+            },
+
+            __getTopicmap: function(topicmapId) {
+                this.$.getTopicmap.url = "http://localhost:8080/topicmap/" + topicmapId;
+                this.$.getTopicmap.generateRequest();
             }
         });
     </script>

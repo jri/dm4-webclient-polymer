@@ -1,5 +1,4 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="dm4-topic-renderer.html">
 <link rel="import" href="dm4-utils.html">
 
@@ -15,12 +14,8 @@
     </style>
 
     <template>
-        <iron-ajax id="getTopic" url="{{_getURL(topicId)}}" params='{"include_childs": true}'
-            content-type="application/json" last-response="{{topic}}">
-        </iron-ajax>
-
-        <h2>{{topic.value}}</h2>
-        <dm4-topic-renderer topic="{{topic}}" form-mode="{{formMode}}"></dm4-topic-renderer>
+        <h2>[[topic.value]]</h2>
+        <dm4-topic-renderer topic="[[topic]]" form-mode="[[formMode]]"></dm4-topic-renderer>
     </template>
 
     <script>
@@ -28,15 +23,6 @@
             is: "dm4-detail-panel",
 
             properties: {
-
-                /**
-                 * ID of the displayed topic.
-                 * Once changed a new topic is loaded and displayed.
-                 */
-                topicId: {
-                    type: Number,
-                    observer: "_topicIdChanged"
-                },
 
                 /**
                  * The displayed topic.
@@ -58,30 +44,45 @@
                 DM4.Utils
             ],
 
+            // ---------------------------------------------------------------------------------------------- Public API
+
+            showTopic: function(topic) {
+                this.formMode = false;
+                this.topic = topic;
+            },
+
             showForm: function(topic) {
-                this.topic = null;
-                //
                 this.formMode = true;
                 this.topic = topic;
+            },
+
+            clear: function() {
+                this.topic = null;
             },
 
             finishEdit: function() {
                 this.formMode = false;
             },
 
-            buildTopicModel: function() {
-                return this._buildTopicModel(this.topic);
+            buildTopicModel: function(topic) {
+                return this._buildTopicModel(topic || this.topic);
             },
+
+            // --------------------------------------------------------------------------------------------- Private API
 
             _buildTopicModel: function(topic) {
                 var topicType = this.getTopicType(topic.type_uri);
                 if (topicType.isSimple()) {
                     if (this._isDirty(topic)) {
-                        console.log(this.getTopicType(topic.type_uri).value, topic.value, topic.oldValue, "--> dirty");
+                        console.log("new", this.getTopicType(topic.type_uri).value, '"' + topic.value + '" old "' +
+                            topic.oldValue + '" --> dirty');
                         return {
                             id: topic.id,
                             value: topic.value
                         }
+                    } else {
+                        console.log("new", this.getTopicType(topic.type_uri).value, '"' + topic.value + '" old "' +
+                            topic.oldValue + '" --> clean');
                     }
                 } else {
                     var childs = null;
@@ -128,15 +129,6 @@
 
             _isMany: function(assocDef) {
                 return assocDef.child_cardinality_uri == "dm4.core.many";
-            },
-
-            _topicIdChanged: function() {
-                this.topic = null;      // empty detail panel before refilling it
-                this.$.getTopic.generateRequest();
-            },
-
-            _getURL: function(topicId) {
-                return "http://localhost:8080/core/topic/" + topicId;
             }
         });
     </script>

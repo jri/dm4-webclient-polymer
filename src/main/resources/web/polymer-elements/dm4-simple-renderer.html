@@ -42,8 +42,7 @@
                  * If `null`/`undefined` nothing is rendered.
                  */
                 topic: {
-                    type: Object,
-                    observer: "_initTopic"
+                    type: Object
                 },
 
                 /**
@@ -53,6 +52,10 @@
                     type: Boolean
                 }
             },
+
+            observers: [
+                "_initTopic(topic, formMode)"
+            ],
 
             behaviors: [
                 DM4.Utils
@@ -66,8 +69,8 @@
 
             // --------------------------------------------------------------------------------------------- Private API
 
-            _initTopic: function(topic) {
-                if (topic && this.formMode) {
+            _initTopic: function(topic, formMode) {
+                if (topic && formMode) {
                     // console.log("_initTopic", topic);
                     topic.oldValue = topic.value;
                 }

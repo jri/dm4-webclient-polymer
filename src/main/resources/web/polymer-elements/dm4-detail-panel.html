@@ -40,6 +40,10 @@
                 }
             },
 
+            listeners: {
+                "dom-change": "_focusFirstInput"
+            },
+
             behaviors: [
                 DM4.Utils
             ],
@@ -129,6 +133,24 @@
 
             _isMany: function(assocDef) {
                 return assocDef.child_cardinality_uri == "dm4.core.many";
+            },
+
+            // ---
+
+            _focusFirstInput: function(e) {
+                // if (e.eventPhase == e.AT_TARGET) {
+                // if (e.target == this.$.detailPanelTemplate) {
+                    // console.log("_focusFirstInput", e.target, e.eventPhase, e.AT_TARGET, e);
+                // }
+                // TODO: focus only once per form
+                // Note: only dom-if and dom-repeat templates fire the dom-change event.
+                if (this.formMode) {
+                    var paperInput = this.querySelector("paper-input");     // this.$$("paper-input") doesn't work
+                    if (paperInput) {
+                        console.log("Focusing <paper-input>");
+                        paperInput.inputElement.focus();
+                    }
+                }
             }
         });
     </script>

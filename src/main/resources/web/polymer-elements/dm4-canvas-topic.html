@@ -93,11 +93,11 @@
                     this.topic.view_props["dm4.topicmaps.y"] = changedViewProps["dm4.topicmaps.y"];
                     this.notifyPath("topic.view_props", changedViewProps);
                     //
-                    this.fire("topic-move", {topic: this.topic});
-                    //
+                    this.fire("topic-moving", {topic: this.topic});
                     break;
                 case "end":
                     // console.log("track end");
+                    this.fire("topic-move", {topic: this.topic});
                     break;
                 }
             }

@@ -18,6 +18,7 @@
         </dm4-canvas-renderer>
 
         <iron-ajax id="addTopicToTopicmap" method="POST" content-type="application/json"></iron-ajax>
+        <iron-ajax id="setTopicPosition"   method="PUT"  content-type="application/json"></iron-ajax>
     </template>
 
     <script>
@@ -54,6 +55,7 @@
             ],
 
             listeners: {
+                "topic-move":  "_storePosition",
                 "iron-resize": "_panelResized"
             },
 
@@ -86,6 +88,16 @@
 
             // --------------------------------------------------------------------------------------------- Private API
 
+            // === Event Handler ===
+
+            _storePosition: function(e) {
+                console.log("_storePosition");
+                var topic = e.detail.topic;
+                var viewProps = topic.view_props;
+                this.__setTopicPosition(this.topicmap.info.id, topic.id, viewProps["dm4.topicmaps.x"],
+                                                                         viewProps["dm4.topicmaps.y"]);
+            },
+
             _panelResized: function(e) {
                 this.size = {
                     width: this.clientWidth,
@@ -99,6 +111,12 @@
                 this.$.addTopicToTopicmap.url = "http://localhost:8080/topicmap/" + topicmapId + "/topic/" + topicId;
                 this.$.addTopicToTopicmap.body = JSON.stringify(viewProps);
                 this.$.addTopicToTopicmap.generateRequest();
+            },
+
+            __setTopicPosition: function(topicmapId, topicId, x, y) {
+                this.$.setTopicPosition.url = "http://localhost:8080/topicmap/" + topicmapId + "/topic/" + topicId +
+                    "/" + x + "/" + y;
+                this.$.setTopicPosition.generateRequest();
             }
         });
     </script>

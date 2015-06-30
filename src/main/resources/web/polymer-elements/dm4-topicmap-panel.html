@@ -16,6 +16,8 @@
     <template>
         <dm4-canvas-renderer topicmap="[[topicmap]]" size="[[size]]" dm4="[[dm4]]">
         </dm4-canvas-renderer>
+
+        <iron-ajax id="addTopicToTopicmap" method="POST" content-type="application/json"></iron-ajax>
     </template>
 
     <script>
@@ -58,9 +60,10 @@
             // ---------------------------------------------------------------------------------------------- Public API
 
             showTopic: function(topic, select) {
+                // TODO: if already in topicmap just set visibility
                 topic.view_props = {
-                    "dm4.topicmaps.x": this.size.width  * Math.random(),
-                    "dm4.topicmaps.y": this.size.height * Math.random(),
+                    "dm4.topicmaps.x": Math.floor(this.size.width  * Math.random()),
+                    "dm4.topicmaps.y": Math.floor(this.size.height * Math.random()),
                     "dm4.topicmaps.visibility": true
                 };
                 // console.log("showTopic", topic);
@@ -69,6 +72,8 @@
                 if (select) {
                     this.setSelectedTopic(topic.id);
                 }
+                // update DB
+                this.__addTopicToTopicmap(this.topicmap.info.id, topic.id, topic.view_props);
             },
 
             setSelectedTopic: function(topicId) {
@@ -86,6 +91,14 @@
                     width: this.clientWidth,
                     height: this.clientHeight
                 }
+            },
+
+            // === Requests ===
+
+            __addTopicToTopicmap: function(topicmapId, topicId, viewProps) {
+                this.$.addTopicToTopicmap.url = "http://localhost:8080/topicmap/" + topicmapId + "/topic/" + topicId;
+                this.$.addTopicToTopicmap.body = JSON.stringify(viewProps);
+                this.$.addTopicToTopicmap.generateRequest();
             }
         });
     </script>

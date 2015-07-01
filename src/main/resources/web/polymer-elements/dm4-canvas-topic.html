@@ -73,7 +73,7 @@
             _trackTopic: function(e) {
                 switch (e.detail.state) {
                 case "start":
-                    // console.log("track start");
+                    // console.log("topic track start", e);
                     break;
                 case "track":
                     // Note: we can't use set() or notifyPath() to update the single x/y view-prop values because
@@ -96,10 +96,12 @@
                     this.fire("topic-moving", {topic: this.topic});
                     break;
                 case "end":
-                    // console.log("track end");
+                    // console.log("topic track end");
                     this.fire("topic-move", {topic: this.topic});
                     break;
                 }
+                // prevent canvas move
+                e.stopPropagation();
             }
         });
     </script>

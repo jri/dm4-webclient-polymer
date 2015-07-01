@@ -55,7 +55,7 @@
             ],
 
             listeners: {
-                "topic-move":  "_storePosition",
+                "topic-move":  "_storeTopicPosition",
                 "iron-resize": "_panelResized"
             },
 
@@ -90,8 +90,8 @@
 
             // === Event Handler ===
 
-            _storePosition: function(e) {
-                console.log("_storePosition");
+            _storeTopicPosition: function(e) {
+                console.log("_storeTopicPosition");
                 var topic = e.detail.topic;
                 var viewProps = topic.view_props;
                 this.__setTopicPosition(this.topicmap.info.id, topic.id, viewProps["dm4.topicmaps.x"],

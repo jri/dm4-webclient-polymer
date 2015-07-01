@@ -3,11 +3,21 @@
 
 <dom-module id="dm4-canvas-renderer">
 
+    <style>
+        div {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+        }
+    </style>
+
     <template>
         <canvas width="[[size.width]]" height="[[size.height]]"></canvas>
-        <template is="dom-repeat" items="[[topicmap.topics]]">
-            <dm4-canvas-topic topic=[[item]] dm4="[[dm4]]"></dm4-canvas-topic>
-        </template>
+        <div style$="[[_getTopicLayerStyle(translation)]]">
+            <template is="dom-repeat" items="[[topicmap.topics]]">
+                <dm4-canvas-topic topic="[[item]]" dm4="[[dm4]]"></dm4-canvas-topic>
+            </template>
+        </div>
     </template>
 
     <script>
@@ -24,42 +34,103 @@
                  */
                 topicmap: {
                     type: Object,
-                    observer: "_drawAssociations"
+                    observer: "_drawCanvas"
                 },
 
                 /**
-                 * The size of this canvas renderer.
+                 * The canvas 2D drawing context.
+                 */
+                ctx: {
+                    type: Object
+                },
+
+                /**
+                 * The canvas size in pixel.
+                 * An object with `width` and `height` properties.
                  */
                 size: {
                     type: Object,
                     observer: "_canvasSizeChanged"
+                },
+
+                /**
+                 * The canvas translation in pixel.
+                 * An object with `x` and `y` properties.
+                 */
+                translation: {
+                    type: Object,
+                    value: {x: 0, y: 0},
+                    observer: "_translationChanged"
                 }
             },
 
             listeners: {
-                "topic-moving": "_drawAssociations"
+                "topic-moving": "_drawCanvas",
+                "track": "_trackCanvas"
             },
 
             ready: function() {
                 this.ctx = this.$$("canvas").getContext("2d");
             },
 
+            // --------------------------------------------------------------------------------------------- Private API
+
             // --- Local DOM ---
 
-            _canvasSizeChanged: function() {
-                console.log("canvas renderer size changed", this.size)
-                this._drawAssociations();
+            _trackCanvas: function(e) {
+                switch (e.detail.state) {
+                case "start":
+                    // console.log("canvas track start");
+                    break;
+                case "track":
+                    this.translation = {
+                        x: this.translation.x + e.detail.ddx,
+                        y: this.translation.y + e.detail.ddy
+                    }
+                    // this.fire("topic-moving", {topic: this.topic});
+                    break;
+                case "end":
+                    // console.log("canvas track end");
+                    // this.fire("topic-move", {topic: this.topic});
+                    break;
+                }
+            },
+
+            _canvasSizeChanged: function(size) {
+                console.log("canvas size changed", size);
+                // Note: once its size has changed a canvas looses its translation
+                this.ctx.translate(this.translation.x, this.translation.y);
+                this._drawCanvas();
+            },
+
+            _translationChanged: function(translation, oldTranslation) {
+                // Note: at initialization the old value is undefined
+                if (oldTranslation) {
+                    var dx = translation.x - oldTranslation.x;
+                    var dy = translation.y - oldTranslation.y;
+                    // console.log("canvas translation changed", translation, "-->", dx, dy);
+                    this.ctx.translate(dx, dy);
+                    this._drawCanvas();
+                }
+            },
+
+            _getTopicLayerStyle: function(translation) {
+                return "top: " + translation.y + "px; left: " + translation.x + "px;";
             },
 
             // --- Canvas Drawing ---
 
-            _drawAssociations: function() {
+            _drawCanvas: function() {
                 // at the time of the first resize event no topicmap is set
                 if (!this.topicmap) {
                     return;
                 }
                 //
-                this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);   // TODO: topicmap translation
+                this.ctx.clearRect(-this.translation.x, -this.translation.y, this.size.width, this.size.height);
+                this._drawAssociations();
+            },
+
+            _drawAssociations: function() {
                 for (var i = 0, assoc; assoc = this.topicmap.assocs[i]; i++) {
                     var p1 = this._getTopicPos(assoc.role_1.topic_id);
                     var p2 = this._getTopicPos(assoc.role_2.topic_id);

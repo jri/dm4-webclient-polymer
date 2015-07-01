@@ -5,20 +5,14 @@
 
 <dom-module id="dm4-composite-renderer">
 
-    <style>
-        :host {
-            display: block;
-        }
-    </style>
-
     <template>
         <template is="dom-repeat" items="{{_getAssocDefs(topic)}}" as="assocDef">
             <template is="dom-if" if="{{_isOne(assocDef)}}" restamp>
-                <dm4-topic-renderer topic="{{_getChildTopic(topic, assocDef)}}" form-mode="{{formMode}}">
+                <dm4-topic-renderer topic="{{_getChildTopic(topic, assocDef, formMode)}}" form-mode="{{formMode}}">
                 </dm4-topic-renderer>
             </template>
             <template is="dom-if" if="{{_isMany(assocDef)}}" restamp>
-                <dm4-multi-renderer topics="{{_getChildTopics(topic, assocDef)}}" form-mode="{{formMode}}">
+                <dm4-multi-renderer topics="{{_getChildTopics(topic, assocDef, formMode)}}" form-mode="{{formMode}}">
                 </dm4-multi-renderer>
             </template>
         </template>
@@ -31,16 +25,19 @@
             properties: {
 
                 /**
-                 * The rendered composite topic.
+                 * The displayed topic.
+                 * If `null`/`undefined` nothing is displayed.
                  */
-                topic: Object,
+                topic: {
+                    type: Object
+                },
 
                 /**
-                 * If `true` a form for the composite topic is rendered.
+                 * If `true` a form for the topic is rendered.
                  */
-                 formMode: {
-                     type: Boolean
-                 }
+                formMode: {
+                    type: Boolean
+                }
             },
 
             behaviors: [
@@ -52,10 +49,10 @@
                 return topic && this.getTopicType(topic.type_uri).assocDefs;
             },
 
-            _getChildTopic: function(topic, assocDef) {
+            _getChildTopic: function(topic, assocDef, formMode) {
                 var childTypeUri = assocDef.childTypeUri;
                 var childTopic = topic && topic.childs[childTypeUri];
-                if (!childTopic && this.formMode) {
+                if (!childTopic && formMode) {
                     childTopic = this._createEmptyTopic(childTypeUri);
                     topic.childs[childTypeUri] = childTopic;
                 }
@@ -63,11 +60,11 @@
                 return childTopic;
             },
 
-            _getChildTopics: function(topic, assocDef) {
+            _getChildTopics: function(topic, assocDef, formMode) {
                 // console.log("_getChildTopics topic", topic, "assocDef", assocDef);
                 var childTypeUri = assocDef.childTypeUri;
                 var childTopics = topic && topic.childs[childTypeUri];
-                if ((!childTopics || childTopics.length == 0) && this.formMode) {
+                if ((!childTopics || childTopics.length == 0) && formMode) {
                     childTopics = [this._createEmptyTopic(childTypeUri)];
                     topic.childs[childTypeUri] = childTopics;
                 }

@@ -5,12 +5,6 @@
 
 <dom-module id="dm4-topic-renderer">
 
-    <style>
-        :host {
-            display: block;
-        }
-    </style>
-
     <template>
         <template is="dom-if" if="{{_isSimple(topic)}}" restamp>
             <dm4-simple-renderer topic="{{topic}}" form-mode="{{formMode}}"></dm4-simple-renderer>
@@ -27,9 +21,19 @@
             properties: {
 
                 /**
-                 * The rendered topic.
+                 * The displayed topic.
+                 * If `null`/`undefined` nothing is displayed.
                  */
-                topic: Object
+                topic: {
+                    type: Object
+                },
+
+                /**
+                 * If `true` a form for the topic is rendered.
+                 */
+                formMode: {
+                    type: Boolean
+                }
             },
 
             behaviors: [

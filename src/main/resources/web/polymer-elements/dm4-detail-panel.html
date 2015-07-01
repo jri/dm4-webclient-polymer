@@ -6,16 +6,37 @@
 
     <style>
         :host {
+            display: flex;
+            flex-flow: column;
             flex: 0 0 25em;
+            background-color: #f8f8f8;
+        }
+
+        div:nth-child(1) {
             padding: 1em;
             overflow: auto;
-            background-color: #f8f8f8;
+        }
+
+        div:nth-child(2) {
+            flex: none;
         }
     </style>
 
     <template>
-        <h2>[[topic.value]]</h2>
-        <dm4-topic-renderer topic="[[topic]]" form-mode="[[formMode]]"></dm4-topic-renderer>
+        <div>
+            <h2>[[topic.value]]</h2>
+            <dm4-topic-renderer topic="[[topic]]" form-mode="[[formMode]]"></dm4-topic-renderer>
+        </div>
+        <div>
+            <template is="dom-if" if="[[topic]]">
+                <template is="dom-if" if="[[formMode]]">
+                    <paper-button raised on-tap="_submitForm">OK</paper-button>
+                </template>
+                <template is="dom-if" if="[[!formMode]]">
+                    <paper-button raised on-tap="_enterFormMode">Edit</paper-button>
+                </template>
+            </template>
+        </div>
     </template>
 
     <script>
@@ -26,13 +47,14 @@
 
                 /**
                  * The displayed topic.
+                 * If `null`/`undefined` nothing is displayed.
                  */
                 topic: {
                     type: Object
                 },
 
                 /**
-                 * If `true` a form for the displayed topic is rendered.
+                 * If `true` a form for the topic is rendered.
                  */
                 formMode: {
                     type: Boolean,
@@ -64,7 +86,7 @@
                 this.topic = null;
             },
 
-            finishEdit: function() {
+            leaveFormMode: function() {
                 this.formMode = false;
             },
 
@@ -133,6 +155,19 @@
 
             _isMany: function(assocDef) {
                 return assocDef.child_cardinality_uri == "dm4.core.many";
+            },
+
+            // === Event Handler ===
+
+            _enterFormMode: function() {
+                this.formMode = true;
+            },
+
+            _submitForm: function() {
+                this.fire("topic-edit", {
+                    topic: this.topic,
+                    submit: true
+                });
             },
 
             // ---

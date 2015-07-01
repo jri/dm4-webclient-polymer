@@ -15,6 +15,7 @@
             flex-flow: column;
             height: 100%;
         }
+
         div {
             display: flex;
             flex: auto;
@@ -103,7 +104,7 @@
                         var topicModel = this.$.detailPanel.buildTopicModel();
                         console.log("update model", topicModel);
                         this.__updateTopic(topicModel);
-                        this.$.detailPanel.finishEdit();
+                        this.$.detailPanel.leaveFormMode();
                     } else {
                         console.log("_updateTopic --> ignoring");
                     }
@@ -113,7 +114,7 @@
                     var topicModel = this.$.detailPanel.buildTopicModel(topic);
                     console.log("update model", topicModel);
                     this.__updateTopic(topicModel);
-                    e.target.finishEdit();
+                    e.target.leaveFormMode();
                 }
             },
 

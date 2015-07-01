@@ -5,10 +5,6 @@
 <dom-module id="dm4-simple-renderer">
 
     <style>
-        :host {
-            display: block;
-        }
-
         .label {
             font-size: 75%;
             color: #aaa;
@@ -23,12 +19,12 @@
 
     <template>
         <div class="label">{{_getTypeName(topic)}}</div>
-        <div class="value" hidden="{{formMode}}" on-tap="_beginEdit">{{topic.value}}</div>
+        <div class="value" hidden="{{formMode}}" on-tap="_enterFormMode">{{topic.value}}</div>
         <paper-input id="input" hidden="{{!formMode}}" on-keypress="_keyPressed" on-blur="_blurred"
             value="{{topic.value}}" no-label-float>
         </paper-input>
-        <!-- Possible optimization: instantiate paper-input component only when it edit mode.                -->
-        <!-- Tried dom-if template but then focusing input in _beginEdit() fails as input is not yet in DOM. -->
+        <!-- Possible optimization: instantiate paper-input component only when it edit mode.                    -->
+        <!-- Tried dom-if template but then focusing input in _enterFormMode() fails as input is not yet in DOM. -->
     </template>
 
     <script>
@@ -38,15 +34,15 @@
             properties: {
 
                 /**
-                 * The rendered topic.
-                 * If `null`/`undefined` nothing is rendered.
+                 * The displayed topic.
+                 * If `null`/`undefined` nothing is displayed.
                  */
                 topic: {
                     type: Object
                 },
 
                 /**
-                 * If `true` a form field for the simple topic is rendered.
+                 * If `true` a form field for the topic is rendered.
                  */
                 formMode: {
                     type: Boolean
@@ -63,7 +59,7 @@
 
             // ---------------------------------------------------------------------------------------------- Public API
 
-            finishEdit: function() {
+            leaveFormMode: function() {
                 this.formMode = false;
             },
 
@@ -76,8 +72,8 @@
                 }
             },
 
-            _beginEdit: function(e) {
-                console.log("_beginEdit", this.topic.value);
+            _enterFormMode: function(e) {
+                console.log("_enterFormMode", this.topic.value);
                 this.formMode = true;
                 this.$.input.inputElement.focus();
             },
@@ -90,7 +86,7 @@
             },
 
             _blurred: function(e) {
-                // Saving (dm4-webclient) calls finishEdit() and causes a blur (again).
+                // Saving (dm4-webclient) calls leaveFormMode() and causes a blur (again).
                 // We must not fire again.
                 if (this.formMode) {
                     console.log("_blurred", this.topic.value);

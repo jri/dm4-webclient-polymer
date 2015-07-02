@@ -17,8 +17,9 @@
         <dm4-canvas-renderer topicmap="[[topicmap]]" size="[[size]]" dm4="[[dm4]]">
         </dm4-canvas-renderer>
 
-        <iron-ajax id="addTopicToTopicmap" method="POST" content-type="application/json"></iron-ajax>
-        <iron-ajax id="setTopicPosition"   method="PUT"  content-type="application/json"></iron-ajax>
+        <iron-ajax id="addTopicToTopicmap"     method="POST" content-type="application/json"></iron-ajax>
+        <iron-ajax id="setTopicPosition"       method="PUT"  content-type="application/json"></iron-ajax>
+        <iron-ajax id="setTopicmapTranslation" method="PUT"  content-type="application/json"></iron-ajax>
     </template>
 
     <script>
@@ -55,8 +56,9 @@
             ],
 
             listeners: {
-                "topic-move":  "_storeTopicPosition",
-                "iron-resize": "_panelResized"
+                "topic-move":    "_storeTopicPosition",
+                "topicmap-move": "_storeTopicmapPosition",
+                "iron-resize":   "_panelResized"
             },
 
             // ---------------------------------------------------------------------------------------------- Public API
@@ -98,6 +100,12 @@
                                                                          viewProps["dm4.topicmaps.y"]);
             },
 
+            _storeTopicmapPosition: function(e) {
+                console.log("_storeTopicmapPosition");
+                var translation = e.detail.translation;
+                this.__setTopicmapTranslation(this.topicmap.info.id, translation.x, translation.y);
+            },
+
             _panelResized: function(e) {
                 this.size = {
                     width: this.clientWidth,
@@ -117,6 +125,12 @@
                 this.$.setTopicPosition.url = "http://localhost:8080/topicmap/" + topicmapId + "/topic/" + topicId +
                     "/" + x + "/" + y;
                 this.$.setTopicPosition.generateRequest();
+            },
+
+            __setTopicmapTranslation: function(topicmapId, x, y) {
+                this.$.setTopicmapTranslation.url = "http://localhost:8080/topicmap/" + topicmapId + "/translation/" +
+                    x + "/" + y;
+                this.$.setTopicmapTranslation.generateRequest();
             }
         });
     </script>

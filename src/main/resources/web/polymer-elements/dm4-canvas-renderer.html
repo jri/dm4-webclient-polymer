@@ -13,7 +13,7 @@
 
     <template>
         <canvas width="[[size.width]]" height="[[size.height]]"></canvas>
-        <div style$="[[_getTopicLayerStyle(translation)]]">
+        <div style$="[[_getTopicLayerStyle(_translation)]]">
             <template is="dom-repeat" items="[[topicmap.topics]]">
                 <dm4-canvas-topic topic="[[item]]" dm4="[[dm4]]"></dm4-canvas-topic>
             </template>
@@ -34,14 +34,7 @@
                  */
                 topicmap: {
                     type: Object,
-                    observer: "_drawCanvas"
-                },
-
-                /**
-                 * The canvas 2D drawing context.
-                 */
-                ctx: {
-                    type: Object
+                    observer: "_topicmapChanged"
                 },
 
                 /**
@@ -54,13 +47,28 @@
                 },
 
                 /**
+                 * Global state.
+                 * See `dm4-webclient`.
+                 */
+                dm4: {
+                    type: Object
+                },
+
+                /**
                  * The canvas translation in pixel.
                  * An object with `x` and `y` properties.
                  */
-                translation: {
+                _translation: {
                     type: Object,
                     value: {x: 0, y: 0},
                     observer: "_translationChanged"
+                },
+
+                /**
+                 * The canvas 2D drawing context.
+                 */
+                _ctx: {
+                    type: Object
                 }
             },
 
@@ -70,10 +78,16 @@
             },
 
             ready: function() {
-                this.ctx = this.$$("canvas").getContext("2d");
+                this._ctx = this.$$("canvas").getContext("2d");
             },
 
             // --------------------------------------------------------------------------------------------- Private API
+
+            _topicmapChanged: function(topicmap) {
+                this._translation = this._getTranslation(topicmap);
+                console.log("_topicmapChanged: setting up canvas translation", this._translation);
+                this._drawCanvas();
+            },
 
             // --- Local DOM ---
 
@@ -83,15 +97,16 @@
                     // console.log("canvas track start");
                     break;
                 case "track":
-                    this.translation = {
-                        x: this.translation.x + e.detail.ddx,
-                        y: this.translation.y + e.detail.ddy
+                    this._translation = {
+                        x: this._translation.x + e.detail.ddx,
+                        y: this._translation.y + e.detail.ddy
                     }
                     // this.fire("topic-moving", {topic: this.topic});
                     break;
                 case "end":
                     // console.log("canvas track end");
-                    // this.fire("topic-move", {topic: this.topic});
+                    this._setTranslation(this.topicmap, this._translation);
+                    this.fire("topicmap-move", {translation: this._translation});
                     break;
                 }
             },
@@ -99,7 +114,7 @@
             _canvasSizeChanged: function(size) {
                 console.log("canvas size changed", size);
                 // Note: once its size has changed a canvas looses its translation
-                this.ctx.translate(this.translation.x, this.translation.y);
+                this._ctx.translate(this._translation.x, this._translation.y);
                 this._drawCanvas();
             },
 
@@ -109,7 +124,7 @@
                     var dx = translation.x - oldTranslation.x;
                     var dy = translation.y - oldTranslation.y;
                     // console.log("canvas translation changed", translation, "-->", dx, dy);
-                    this.ctx.translate(dx, dy);
+                    this._ctx.translate(dx, dy);
                     this._drawCanvas();
                 }
             },
@@ -126,7 +141,7 @@
                     return;
                 }
                 //
-                this.ctx.clearRect(-this.translation.x, -this.translation.y, this.size.width, this.size.height);
+                this._ctx.clearRect(-this._translation.x, -this._translation.y, this.size.width, this.size.height);
                 this._drawAssociations();
             },
 
@@ -139,12 +154,12 @@
             },
 
             _drawLine: function(x1, y1, x2, y2, width, color) {
-                this.ctx.lineWidth = width
-                this.ctx.strokeStyle = color
-                this.ctx.beginPath();
-                this.ctx.moveTo(x1, y1);
-                this.ctx.lineTo(x2, y2);
-                this.ctx.stroke();
+                this._ctx.lineWidth = width
+                this._ctx.strokeStyle = color
+                this._ctx.beginPath();
+                this._ctx.moveTo(x1, y1);
+                this._ctx.lineTo(x2, y2);
+                this._ctx.stroke();
             },
 
             // --- Model Access ---
@@ -168,6 +183,22 @@
 
             _getY: function(viewProps) {
                 return viewProps["dm4.topicmaps.y"];
+            },
+
+            // ---
+
+            _getTranslation: function(topicmap) {
+                var _translation = topicmap.info.childs["dm4.topicmaps.state"].childs["dm4.topicmaps.translation"];
+                return {
+                    x: _translation.childs["dm4.topicmaps.translation_x"].value,
+                    y: _translation.childs["dm4.topicmaps.translation_y"].value
+                }
+            },
+
+            _setTranslation: function(topicmap, translation) {
+                var _translation = topicmap.info.childs["dm4.topicmaps.state"].childs["dm4.topicmaps.translation"];
+                _translation.childs["dm4.topicmaps.translation_x"].value = translation.x;
+                _translation.childs["dm4.topicmaps.translation_y"].value = translation.y;
             }
         });
     </script>

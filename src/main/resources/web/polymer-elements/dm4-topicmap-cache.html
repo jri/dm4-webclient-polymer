@@ -29,10 +29,10 @@
             requestTopicmap: function(topicmapId) {
                 var topicmap = this.topicmaps[topicmapId];
                 if (topicmap) {
-                    console.log("Loading topicmap", topicmapId, "from cache");
+                    console.log("loading topicmap", topicmapId, "from cache");
                     this._fireReady(topicmap);
                 } else {
-                    console.log("Loading topicmap", topicmapId, "from server");
+                    console.log("loading topicmap", topicmapId, "from server");
                     this.__getTopicmap(topicmapId);
                 }
             },

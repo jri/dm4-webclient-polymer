@@ -5,6 +5,7 @@
 <link rel="import" href="dm4-topicmap-panel.html">
 <link rel="import" href="dm4-detail-panel.html">
 <link rel="import" href="dm4-typecache.html">
+<link rel="import" href="dm4-topicmap-cache.html">
 
 <dom-module id="dm4-webclient">
 
@@ -30,6 +31,7 @@
         </div>
 
         <dm4-typecache dm4="{{dm4}}"></dm4-typecache>
+        <dm4-topicmap-cache id="topicmapCache"></dm4-topicmap-cache>
         <iron-meta key="dm4" value="[[dm4]]"></iron-meta>
 
         <iron-ajax id="createTopic" method="POST" url="http://localhost:8080/core/topic" content-type="application/json"
@@ -39,9 +41,6 @@
             on-response="_showTopicInDetailPanel">
         </iron-ajax>
         <iron-ajax id="updateTopic" method="PUT" content-type="application/json"></iron-ajax>
-        <iron-ajax id="getTopicmap" headers='{"Content-Type": "application/json", "Accept": "application/json"}'
-            on-response="_showTopicmap">
-        </iron-ajax>
     </template>
 
     <script>
@@ -69,9 +68,10 @@
 
             listeners: {
                 "topic-select":    "_selectTopic",
-                "topicmap-select": "_selectTopicmap",
                 "topic-create":    "_createTopic",
-                "topic-edit":      "_updateTopic"
+                "topic-edit":      "_updateTopic",
+                "topicmap-select": "_selectTopicmap",
+                "topicmap-ready":  "_showTopicmap",
             },
 
             // --------------------------------------------------------------------------------------------- Private API
@@ -83,11 +83,6 @@
                 this.$.topicmapPanel.setSelectedTopic(topicId);
                 this.$.detailPanel.clear();
                 this.__getTopic(topicId);
-            },
-
-            _selectTopicmap: function(e) {
-                var topicmapId = e.detail.topicmap.id;
-                this.__getTopicmap(topicmapId);
             },
 
             _createTopic: function(e) {
@@ -118,6 +113,16 @@
                 }
             },
 
+            _selectTopicmap: function(e) {
+                var topicmapId = e.detail.topicmap.id;
+                this.$.topicmapCache.requestTopicmap(topicmapId);
+            },
+
+            _showTopicmap: function(e) {
+                var topicmap = e.detail.topicmap;
+                this.$.topicmapPanel.showTopicmap(topicmap);
+            },
+
             _showTopic: function(e) {
                 var topic = e.detail.response;
                 this.$.topicmapPanel.showTopic(topic, true);   // select=true
@@ -127,11 +132,6 @@
             _showTopicInDetailPanel: function(e) {
                 var topic = e.detail.response;
                 this.$.detailPanel.showTopic(topic);
-            },
-
-            _showTopicmap: function(e) {
-                var topicmap = e.detail.response;
-                this.$.topicmapPanel.showTopicmap(topicmap);
             },
 
             // === Requests ===
@@ -152,11 +152,6 @@
                     this.$.updateTopic.body = JSON.stringify(topic);
                     this.$.updateTopic.generateRequest();
                 }
-            },
-
-            __getTopicmap: function(topicmapId) {
-                this.$.getTopicmap.url = "http://localhost:8080/topicmap/" + topicmapId;
-                this.$.getTopicmap.generateRequest();
             }
         });
     </script>

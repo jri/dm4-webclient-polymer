@@ -21,15 +21,14 @@
                 "_hashAssocTypes(dm4.assocTypesArray)"
             ],
 
-            // ---
+            // --------------------------------------------------------------------------------------------- Private API
 
             _setTopicTypes: function(e) {
                 // console.log("_setTopicTypes", e.detail.response);
                 var topicTypes = e.detail.response;
                 this.set("dm4.topicTypesArray", topicTypes.map(function(topicType) {
                     return new DM4.TopicType(topicType);
-                }));
-                
+                }));                
             },
 
             _setAssocTypes: function(e) {

@@ -14,8 +14,7 @@
     </style>
 
     <template>
-        <dm4-canvas-renderer topicmap="[[topicmap]]" size="[[size]]" dm4="[[dm4]]">
-        </dm4-canvas-renderer>
+        <dm4-canvas-renderer topicmap="[[topicmap]]" size="[[size]]" dm4="[[dm4]]"></dm4-canvas-renderer>
 
         <iron-ajax id="addTopicToTopicmap"     method="POST" content-type="application/json"></iron-ajax>
         <iron-ajax id="setTopicPosition"       method="PUT"  content-type="application/json"></iron-ajax>
@@ -81,7 +80,7 @@
             },
 
             setSelectedTopic: function(topicId) {
-                this.set("dm4.selectedTopicIds", [topicId]);
+                this.set("topicmap.selection", [topicId]);
             },
 
             showTopicmap: function(topicmap) {

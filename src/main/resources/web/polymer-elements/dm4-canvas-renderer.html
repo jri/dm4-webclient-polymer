@@ -14,8 +14,8 @@
     <template>
         <canvas width="[[size.width]]" height="[[size.height]]"></canvas>
         <div style$="[[_getTopicLayerStyle(_translation)]]">
-            <template is="dom-repeat" items="[[topicmap.topics]]">
-                <dm4-canvas-topic topic="[[item]]" dm4="[[dm4]]"></dm4-canvas-topic>
+            <template is="dom-repeat" items="[[topicmap.topics]]" as="topic">
+                <dm4-canvas-topic topic="[[topic]]" selection="[[topicmap.selection]]"></dm4-canvas-topic>
             </template>
         </div>
     </template>

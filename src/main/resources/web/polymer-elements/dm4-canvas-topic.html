@@ -20,7 +20,7 @@
 
     <template>
         <div class="topic" style$="{{_getStyle(topic.view_props)}}"
-            selected$="{{_getSelected(dm4.selectedTopicIds)}}">{{topic.value}}</div>
+            selected$="{{_getSelected(topic, selection)}}">{{topic.value}}</div>
     </template>
 
     <script>
@@ -37,11 +37,10 @@
                 },
 
                 /**
-                 * Global state.
-                 * See `dm4-webclient`.
+                 * Topicmap selection state.
                  */
-                dm4: {
-                    type: Object
+                selection: {
+                    type: Array
                 }
             },
 
@@ -57,8 +56,9 @@
                     "background-color: hsl(210,100%,90%);";
             },
 
-            _getSelected: function(selectedTopicIds) {
-                return DM4.contains(selectedTopicIds, this.topic.id);
+            _getSelected: function(topic, selection) {
+                // console.log("_getSelected", selection, topic.id);
+                return DM4.contains(selection, topic.id);
             },
 
             // --- Model Access ---

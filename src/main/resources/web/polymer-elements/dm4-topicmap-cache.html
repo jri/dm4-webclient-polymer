@@ -47,6 +47,7 @@
 
             _cacheTopicmap: function(e) {
                 var topicmap = e.detail.response;
+                topicmap.selection = [];    // init selection state
                 this.topicmaps[topicmap.info.id] = topicmap;
                 this._fireReady(topicmap);
             },

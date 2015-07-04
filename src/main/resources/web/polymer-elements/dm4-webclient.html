@@ -74,13 +74,17 @@
 
             // --------------------------------------------------------------------------------------------- Private API
 
+            _getTopicAndShowInDetailPanel: function(topicId) {
+                this.$.detailPanel.clear();
+                this.__getTopic(topicId);
+            },
+
             // === Event Handler ===
 
             _selectTopic: function(e) {
                 var topicId = e.detail.topic.id;
                 this.$.topicmapPanel.setSelectedTopic(topicId);
-                this.$.detailPanel.clear();
-                this.__getTopic(topicId);
+                this._getTopicAndShowInDetailPanel(topicId);
             },
 
             _createTopic: function(e) {
@@ -119,6 +123,12 @@
             _showTopicmap: function(e) {
                 var topicmap = e.detail.topicmap;
                 this.$.topicmapPanel.showTopicmap(topicmap);
+                var topicId = topicmap.selection[0];
+                if (topicId) {
+                    this._getTopicAndShowInDetailPanel(topicId);
+                } else {
+                    this.$.detailPanel.clear();
+                }
             },
 
             _showTopic: function(e) {

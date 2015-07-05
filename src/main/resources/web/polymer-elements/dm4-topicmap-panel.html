@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="dm4-canvas-renderer.html">
+<link rel="import" href="dm4-context-menu.html">
 
 <dom-module id="dm4-topicmap-panel">
 
@@ -57,6 +58,7 @@
             listeners: {
                 "topic-move":    "_storeTopicPosition",
                 "topicmap-move": "_storeTopicmapPosition",
+                "topic-context": "_showTopicContextMenu",
                 "iron-resize":   "_panelResized"
             },
 
@@ -103,6 +105,18 @@
                 console.log("_storeTopicmapPosition");
                 var translation = e.detail.translation;
                 this.__setTopicmapTranslation(this.topicmap.info.id, translation.x, translation.y);
+            },
+
+            _showTopicContextMenu: function(e) {
+                var topic = e.detail.topic;
+                var menu = this.create("dm4-context-menu");
+                menu.addItem({label: "Hide", handler: function() {
+                    console.log("hiding topic", topic);
+                }})
+                menu.addItem({label: "Delete", handler: function() {
+                    console.log("deleting topic", topic);
+                }})
+                menu.show(this, e.detail.x, e.detail.y);
             },
 
             _panelResized: function(e) {

@@ -1,0 +1,69 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+
+<dom-module id="dm4-context-menu">
+
+    <style>
+        paper-menu {
+            position: absolute;
+            border: 1px solid lightgray;
+            overflow: auto;
+            box-sizing: border-box;
+        }
+    </style>
+
+    <template>
+        <paper-menu id="menu" on-iron-select="_invokeHandler">
+            <template is="dom-repeat" items="[[items]]">
+                <paper-item>[[item.label]]</paper-item>
+            </template>
+        </paper-menu>
+    </template>
+
+    <script>
+        Polymer({
+            is: "dm4-context-menu",
+
+            properties: {
+                items: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                }
+            },
+
+            // ---------------------------------------------------------------------------------------------- Public API
+
+            /**
+             * @param   item    an object with `label` and `handler` properties.
+             */
+            addItem: function(item) {
+                this.push("items", item);
+            },
+
+            show: function(parent, x, y) {
+                var rect = parent.getBoundingClientRect();
+                this.$.menu.style.left = x - rect.left + "px";
+                this.$.menu.style.top  = y - rect.top  + "px";
+                parent.appendChild(this);
+            },
+
+            // --------------------------------------------------------------------------------------------- Private API
+
+            _showMenu: function() {
+                this.$.menu.style.display = "block";
+            },
+
+            _hideMenu: function() {
+                this.$.menu.style.display = "none";
+            },
+
+            _invokeHandler: function(e) {
+                var item = e.detail.item.dataHost.item;
+                item.handler();
+            }
+        });
+    </script>
+
+</dom-module>

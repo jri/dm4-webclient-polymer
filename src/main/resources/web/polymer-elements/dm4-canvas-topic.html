@@ -46,7 +46,8 @@
 
             listeners: {
                 "tap": "_selectTopic",
-                "track": "_trackTopic"
+                "track": "_trackTopic",
+                "contextmenu": "_contextmenu"
             },
 
             // --- Local DOM ---
@@ -78,7 +79,20 @@
                 this.fire("topic-select", {topic: this.topic});
             },
 
+            _contextmenu: function(e) {
+                // console.log("_contextmenu", e);
+                this.fire("topic-context", {topic: this.topic, x: e.clientX, y: e.clientY});
+                e.preventDefault();     // suppress browser's own context menu
+            },
+
             _trackTopic: function(e) {
+                // prevent canvas move
+                e.stopPropagation();
+                // track only the main button
+                if (e.detail.sourceEvent.button != 0) {
+                    return;
+                }
+                //
                 switch (e.detail.state) {
                 case "start":
                     // console.log("topic track start", e);
@@ -108,8 +122,6 @@
                     this.fire("topic-move", {topic: this.topic});
                     break;
                 }
-                // prevent canvas move
-                e.stopPropagation();
             }
         });
     </script>

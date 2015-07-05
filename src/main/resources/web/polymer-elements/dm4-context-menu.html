@@ -1,19 +1,18 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
 
 <dom-module id="dm4-context-menu">
 
     <style>
-        paper-menu {
+        :host {
             position: absolute;
             border: 1px solid lightgray;
-            overflow: auto;
-            box-sizing: border-box;
         }
     </style>
 
     <template>
-        <paper-menu id="menu" on-iron-select="_invokeHandler">
+        <paper-menu on-iron-select="_invokeHandler">
             <template is="dom-repeat" items="[[items]]">
                 <paper-item>[[item.label]]</paper-item>
             </template>
@@ -33,6 +32,10 @@
                 }
             },
 
+            behaviors: [
+              Polymer.IronOverlayBehavior
+            ],
+
             // ---------------------------------------------------------------------------------------------- Public API
 
             /**
@@ -44,22 +47,16 @@
 
             show: function(parent, x, y) {
                 var rect = parent.getBoundingClientRect();
-                this.$.menu.style.left = x - rect.left + "px";
-                this.$.menu.style.top  = y - rect.top  + "px";
+                this.style.left = x - rect.left + "px";
+                this.style.top  = y - rect.top  + "px";
                 parent.appendChild(this);
+                this.open();
             },
 
             // --------------------------------------------------------------------------------------------- Private API
 
-            _showMenu: function() {
-                this.$.menu.style.display = "block";
-            },
-
-            _hideMenu: function() {
-                this.$.menu.style.display = "none";
-            },
-
             _invokeHandler: function(e) {
+                this.close();
                 var item = e.detail.item.dataHost.item;
                 item.handler();
             }

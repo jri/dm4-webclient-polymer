@@ -1,6 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="dm4-menu-overlay.html">
 
 <dom-module id="dm4-dropdown-menu">
 
@@ -8,51 +8,50 @@
         paper-button[active] {
             background-color: rgba(0, 0, 0, 0.25);
         }
-        paper-menu {
-            display: none;
-            position: absolute;
-            border: 1px solid lightgray;
-            overflow: auto;
-            box-sizing: border-box;
-        }
     </style>
 
     <template>
         <!-- Note: with Firefox the paper-button "noink" attribute causes constant high CPU load
         once the button is pressed -->
-        <paper-button id="button" on-tap="_buttonTap" toggles raised>{{label}}</paper-button>
-        <paper-menu id="menu" on-iron-select="_itemSelect">
+        <paper-button id="button" on-tap="_openMenu" toggles raised>{{label}}</paper-button>
+        <dm4-menu-overlay id="menu">
             <content></content>
-        </paper-menu>
+        </dm4-menu-overlay>
     </template>
 
     <script>
         Polymer({
             is: "dm4-dropdown-menu",
 
-            _buttonTap: function(e) {
-                if (this.$.button.active) {
-                    this._showMenu();
-                    // adjust menu position and height
-                    this.$.menu.style.left = this.$.button.getBoundingClientRect().left + "px";
-                    this.$.menu.style["max-height"] = document.body.getBoundingClientRect().height -
-                                                        this.$.menu.getBoundingClientRect().top + "px";
-                } else {
-                    this._hideMenu();
+            properties: {
+
+                /**
+                 * The label displayed on the button.
+                 */
+                label: {
+                    type: String
                 }
             },
 
-            _itemSelect: function() {
+            listeners: {
+                "iron-overlay-closed": "_deactivateButton"
+            },
+
+            // --------------------------------------------------------------------------------------------- Private API
+
+            _openMenu: function(e) {
+                // console.log("_openMenu", this.$.button.active);
+                if (this.$.button.active) {
+                    var buttonRect = this.$.button.getBoundingClientRect();
+                    this.$.menu.open();     // menu must opened *before* being styled
+                    this.$.menu.style.left = buttonRect.left   + "px";
+                    this.$.menu.style.top  = buttonRect.bottom + "px";
+                }
+            },
+
+            _deactivateButton: function(e) {
+                // console.log("_deactivateButton", e);
                 this.$.button.active = false;
-                this._hideMenu();
-            },
-
-            _showMenu: function() {
-                this.$.menu.style.display = "block";
-            },
-
-            _hideMenu: function() {
-                this.$.menu.style.display = "none";
             }
         });
     </script>

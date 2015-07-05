@@ -4,7 +4,7 @@
 <link rel="import" href="dm4-toolbar.html">
 <link rel="import" href="dm4-topicmap-panel.html">
 <link rel="import" href="dm4-detail-panel.html">
-<link rel="import" href="dm4-typecache.html">
+<link rel="import" href="dm4-type-cache.html">
 <link rel="import" href="dm4-topicmap-cache.html">
 
 <dom-module id="dm4-webclient">
@@ -30,7 +30,7 @@
             <dm4-detail-panel id="detailPanel"></dm4-detail-panel>
         </div>
 
-        <dm4-typecache dm4="{{dm4}}"></dm4-typecache>
+        <dm4-type-cache dm4="{{dm4}}"></dm4-type-cache>
         <dm4-topicmap-cache id="topicmapCache"></dm4-topicmap-cache>
         <iron-meta key="dm4" value="[[dm4]]"></iron-meta>
 
@@ -68,8 +68,7 @@
                 "topic-select":    "_selectTopic",
                 "topic-create":    "_createTopic",
                 "topic-edit":      "_updateTopic",
-                "topicmap-select": "_selectTopicmap",
-                "topicmap-ready":  "_showTopicmap",
+                "topicmap-select": "_selectTopicmap"
             },
 
             // --------------------------------------------------------------------------------------------- Private API
@@ -117,11 +116,12 @@
 
             _selectTopicmap: function(e) {
                 var topicmapId = e.detail.topicmap.id;
-                this.$.topicmapCache.requestTopicmap(topicmapId);
+                this.$.topicmapCache.getTopicmap(topicmapId, function(topicmap) {
+                    this._showTopicmap(topicmap);
+                }.bind(this));
             },
 
-            _showTopicmap: function(e) {
-                var topicmap = e.detail.topicmap;
+            _showTopicmap: function(topicmap) {
                 this.$.topicmapPanel.showTopicmap(topicmap);
                 var topicId = topicmap.selection[0];
                 if (topicId) {

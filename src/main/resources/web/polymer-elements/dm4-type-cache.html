@@ -1,7 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 
-<dom-module id="dm4-typecache">
+<dom-module id="dm4-type-cache">
 
     <template>
         <iron-ajax auto url="http://localhost:8080/core/topictype/all" content-type="application/json"
@@ -14,7 +14,7 @@
 
     <script>
         Polymer({
-            is: "dm4-typecache",
+            is: "dm4-type-cache",
 
             observers: [
                 "_hashTopicTypes(dm4.topicTypesArray)",

@@ -4,8 +4,7 @@
 <dom-module id="dm4-topicmap-cache">
 
     <template>
-        <iron-ajax id="getTopicmap" content-type="application/json" headers='{"Accept": "application/json"}'
-            on-response="_cacheTopicmap">
+        <iron-ajax id="getTopicmap" content-type="application/json" headers='{"Accept": "application/json"}'>
         </iron-ajax>
     </template>
 
@@ -16,7 +15,7 @@
             properties: {
 
                 /**
-                 * The topicmaps cache: loaded topicmaps hashed by ID.
+                 * The topicmaps cache: promises hashed by topicmap ID.
                  */
                 topicmaps: {
                     type: Object,
@@ -26,37 +25,29 @@
 
             // ---------------------------------------------------------------------------------------------- Public API
 
-            requestTopicmap: function(topicmapId) {
-                var topicmap = this.topicmaps[topicmapId];
-                if (topicmap) {
+            getTopicmap: function(topicmapId, callback) {
+                var promise = this.topicmaps[topicmapId];
+                if (promise) {
                     console.log("loading topicmap", topicmapId, "from cache");
-                    this._fireReady(topicmap);
                 } else {
                     console.log("loading topicmap", topicmapId, "from server");
-                    this.__getTopicmap(topicmapId);
+                    promise = this.__getTopicmap(topicmapId);
+                    this.topicmaps[topicmapId] = promise;
                 }
+                promise.then(function(request) {
+                    var topicmap = request.response;
+                    topicmap.selection = topicmap.selection || [];  // init selection state
+                    callback(topicmap);
+                });
             },
 
             // --------------------------------------------------------------------------------------------- Private API
-
-            _fireReady: function(topicmap) {
-                this.fire("topicmap-ready", {topicmap: topicmap});
-            },
-
-            // === Event Handler ===
-
-            _cacheTopicmap: function(e) {
-                var topicmap = e.detail.response;
-                topicmap.selection = [];    // init selection state
-                this.topicmaps[topicmap.info.id] = topicmap;
-                this._fireReady(topicmap);
-            },
 
             // === Requests ===
 
             __getTopicmap: function(topicmapId) {
                 this.$.getTopicmap.url = "http://localhost:8080/topicmap/" + topicmapId;
-                this.$.getTopicmap.generateRequest();
+                return this.$.getTopicmap.generateRequest().completes;
             }
         });
     </script>

@@ -13,8 +13,8 @@
     <template>
         <!-- Note: with Firefox the paper-button "noink" attribute causes constant high CPU load
         once the button is pressed -->
-        <paper-button id="button" on-tap="_openMenu" toggles raised>{{label}}</paper-button>
-        <dm4-menu-overlay id="menu">
+        <paper-button id="button" active="{{opened}}" toggles raised>[[label]]</paper-button>
+        <dm4-menu-overlay id="menu" opened="{{opened}}">
             <content></content>
         </dm4-menu-overlay>
     </template>
@@ -30,28 +30,26 @@
                  */
                 label: {
                     type: String
-                }
-            },
+                },
 
-            listeners: {
-                "iron-overlay-closed": "_deactivateButton"
+                /**
+                 * True if the menu is currently opened.
+                 */
+                opened: {
+                    type: Boolean,
+                    observer: "_adjustPosition"
+                }
             },
 
             // --------------------------------------------------------------------------------------------- Private API
 
-            _openMenu: function(e) {
-                // console.log("_openMenu", this.$.button.active);
-                if (this.$.button.active) {
+            _adjustPosition: function(opened) {
+                // console.log("_adjustPosition", opened);
+                if (opened) {
                     var buttonRect = this.$.button.getBoundingClientRect();
-                    this.$.menu.open();     // menu must opened *before* being styled
                     this.$.menu.style.left = buttonRect.left   + "px";
                     this.$.menu.style.top  = buttonRect.bottom + "px";
                 }
-            },
-
-            _deactivateButton: function(e) {
-                // console.log("_deactivateButton", e);
-                this.$.button.active = false;
             }
         });
     </script>

@@ -16,7 +16,7 @@
 
     <template>
         <dm4-canvas-renderer topicmap="[[topicmap]]" size="[[size]]" dm4="[[dm4]]"></dm4-canvas-renderer>
-
+        <dm4-context-menu id="menu"></dm4-context-menu>
         <iron-ajax id="addTopicToTopicmap"     method="POST" content-type="application/json"></iron-ajax>
         <iron-ajax id="setTopicPosition"       method="PUT"  content-type="application/json"></iron-ajax>
         <iron-ajax id="setTopicmapTranslation" method="PUT"  content-type="application/json"></iron-ajax>
@@ -109,14 +109,14 @@
 
             _showTopicContextMenu: function(e) {
                 var topic = e.detail.topic;
-                var menu = this.create("dm4-context-menu");
-                menu.addItem({label: "Hide", handler: function() {
-                    console.log("hiding topic", topic);
-                }})
-                menu.addItem({label: "Delete", handler: function() {
-                    console.log("deleting topic", topic);
-                }})
-                menu.show(this, e.detail.x, e.detail.y);
+                this.$.menu.removeAll()
+                    .addItem({label: "Hide", handler: function() {
+                        console.log("hiding topic", topic);
+                    }})
+                    .addItem({label: "Delete", handler: function() {
+                        console.log("deleting topic", topic);
+                    }})
+                    .show(this, e.detail.x, e.detail.y);
             },
 
             _panelResized: function(e) {

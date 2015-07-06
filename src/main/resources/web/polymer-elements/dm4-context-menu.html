@@ -43,13 +43,19 @@
              */
             addItem: function(item) {
                 this.push("items", item);
+                return this;
+            },
+
+            removeAll: function() {
+                // this.splice("items", 0, this.items.length);  // does not work
+                this.items = [];
+                return this;
             },
 
             show: function(parent, x, y) {
                 var rect = parent.getBoundingClientRect();
                 this.style.left = x - rect.left + "px";
                 this.style.top  = y - rect.top  + "px";
-                parent.appendChild(this);
                 this.open();
             },
 

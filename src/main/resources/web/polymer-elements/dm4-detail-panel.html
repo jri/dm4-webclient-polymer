@@ -1,4 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="dm4-topic-renderer.html">
 <link rel="import" href="dm4-utils.html">
 
@@ -12,31 +15,68 @@
             background-color: #f8f8f8;
         }
 
-        div:nth-child(1) {
+        iron-pages {
+            display: flex;
+            flex: auto;
             padding: 1em;
+        }
+
+        iron-pages > div:nth-child(1) {
+            display: flex;
+            flex-flow: column;
+        }
+
+        #topic-info {
             overflow: auto;
         }
 
-        div:nth-child(2) {
+        #buttons {
             flex: none;
+        }
+
+        paper-tabs {
+            flex: none;
+            height: 32px;   /* Override 48px */
+        }
+
+        paper-tab:not(.iron-selected) {
+            background-color: lightgray;
+        }
+
+        paper-tab {
+            --paper-tab-content: {
+                font-weight: normal !important;     /* Override 700 for tab content of focused tabs */
+            }
         }
     </style>
 
     <template>
-        <div>
-            <h2>[[topic.value]]</h2>
-            <dm4-topic-renderer topic="[[topic]]" form-mode="[[formMode]]"></dm4-topic-renderer>
-        </div>
-        <div>
-            <template is="dom-if" if="[[topic]]">
-                <template is="dom-if" if="[[formMode]]">
-                    <paper-button raised on-tap="_submitForm">OK</paper-button>
-                </template>
-                <template is="dom-if" if="[[!formMode]]">
-                    <paper-button raised on-tap="_enterFormMode">Edit</paper-button>
-                </template>
-            </template>
-        </div>
+        <iron-pages selected="[[selectedTab]]">
+            <div>
+                <div id="topic-info">
+                    <h2>[[topic.value]]</h2>
+                    <dm4-topic-renderer topic="[[topic]]" form-mode="[[formMode]]"></dm4-topic-renderer>
+                </div>
+                <div id="buttons">
+                    <template is="dom-if" if="[[topic]]">
+                        <template is="dom-if" if="[[formMode]]">
+                            <paper-button raised on-tap="_submitForm">OK</paper-button>
+                        </template>
+                        <template is="dom-if" if="[[!formMode]]">
+                            <paper-button raised on-tap="_enterFormMode">Edit</paper-button>
+                        </template>
+                    </template>
+                </div>
+            </div>
+            <div>
+                <h2>[[topic.value]]</h2>
+                <h3>Related Topics</h3>
+            </div>
+        </iron-pages>
+        <paper-tabs selected="{{selectedTab}}" no-bar>
+            <paper-tab>Info</paper-tab>
+            <paper-tab>Related</paper-tab>
+        </paper-tabs>
     </template>
 
     <script>
@@ -59,6 +99,14 @@
                 formMode: {
                     type: Boolean,
                     value: false
+                },
+
+                /**
+                 * The tab currently selected. "0" or "1".
+                 */
+                selectedTab: {
+                    type: String,
+                    value: "0"
                 }
             },
 

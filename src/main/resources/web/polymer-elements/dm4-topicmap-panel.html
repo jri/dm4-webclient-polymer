@@ -15,7 +15,8 @@
     </style>
 
     <template>
-        <dm4-canvas-renderer topicmap="[[topicmap]]" size="[[size]]" dm4="[[dm4]]"></dm4-canvas-renderer>
+        <dm4-canvas-renderer topicmap="[[topicmap]]" translation={{translation}} size="[[size]]" dm4="[[dm4]]">
+        </dm4-canvas-renderer>
         <dm4-context-menu id="menu"></dm4-context-menu>
         <iron-ajax id="addTopicToTopicmap"     method="POST" content-type="application/json"></iron-ajax>
         <iron-ajax id="setTopicPosition"       method="PUT"  content-type="application/json"></iron-ajax>
@@ -32,7 +33,17 @@
                  * The displayed topicmap.
                  */
                 topicmap: {
-                    type: Object
+                    type: Object,
+                    observer: "_topicmapChanged"
+                },
+
+                /**
+                 * The topicmap translation in pixel.
+                 * An object with `x` and `y` properties.
+                 */
+                translation: {
+                    type: Object,
+                    value: {x: 0, y: 0}
                 },
 
                 /**
@@ -67,8 +78,8 @@
             showTopic: function(topic, select) {
                 // TODO: if already in topicmap just set visibility
                 topic.view_props = {
-                    "dm4.topicmaps.x": Math.floor(this.size.width  * Math.random()),
-                    "dm4.topicmaps.y": Math.floor(this.size.height * Math.random()),
+                    "dm4.topicmaps.x": Math.floor(this.size.width  * Math.random() - this.translation.x),
+                    "dm4.topicmaps.y": Math.floor(this.size.height * Math.random() - this.translation.y),
                     "dm4.topicmaps.visibility": true
                 };
                 // console.log("showTopic", topic);
@@ -91,6 +102,13 @@
 
             // --------------------------------------------------------------------------------------------- Private API
 
+            // === Observer ===
+
+            _topicmapChanged: function(topicmap) {
+                this.translation = this._getTranslation(topicmap);
+                // console.log("_topicmapChanged: setting up canvas translation", this._translation);
+            },
+
             // === Event Handler ===
 
             _storeTopicPosition: function(e) {
@@ -102,9 +120,10 @@
             },
 
             _storeTopicmapPosition: function(e) {
-                console.log("_storeTopicmapPosition");
                 var translation = e.detail.translation;
-                this.__setTopicmapTranslation(this.topicmap.info.id, translation.x, translation.y);
+                // console.log("_storeTopicmapPosition", translation, this.translation);
+                this._setTranslation(this.topicmap, translation);                                   // update model
+                this.__setTopicmapTranslation(this.topicmap.info.id, translation.x, translation.y); // update DB
             },
 
             _showTopicContextMenu: function(e) {
@@ -144,6 +163,22 @@
                 this.$.setTopicmapTranslation.url = "http://localhost:8080/topicmap/" + topicmapId + "/translation/" +
                     x + "/" + y;
                 this.$.setTopicmapTranslation.generateRequest();
+            },
+
+            // === Modell Access ===
+
+            _getTranslation: function(topicmap) {
+                var _translation = topicmap.info.childs["dm4.topicmaps.state"].childs["dm4.topicmaps.translation"];
+                return {
+                    x: _translation.childs["dm4.topicmaps.translation_x"].value,
+                    y: _translation.childs["dm4.topicmaps.translation_y"].value
+                }
+            },
+
+            _setTranslation: function(topicmap, translation) {
+                var _translation = topicmap.info.childs["dm4.topicmaps.state"].childs["dm4.topicmaps.translation"];
+                _translation.childs["dm4.topicmaps.translation_x"].value = translation.x;
+                _translation.childs["dm4.topicmaps.translation_y"].value = translation.y;
             }
         });
     </script>

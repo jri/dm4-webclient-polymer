@@ -13,7 +13,7 @@
 
     <template>
         <canvas width="[[size.width]]" height="[[size.height]]"></canvas>
-        <div style$="[[_getTopicLayerStyle(_translation)]]">
+        <div style$="[[_getTopicLayerStyle(translation)]]">
             <template is="dom-repeat" items="[[topicmap.topics]]" as="topic">
                 <dm4-canvas-topic topic="[[topic]]" selection="[[topicmap.selection]]"></dm4-canvas-topic>
             </template>
@@ -30,11 +30,21 @@
             properties: {
 
                 /**
-                 * The rendered topicmap.
+                 * The displayed topicmap.
                  */
                 topicmap: {
                     type: Object,
                     observer: "_topicmapChanged"
+                },
+
+                /**
+                 * The topicmap translation in pixel.
+                 * An object with `x` and `y` properties.
+                 */
+                translation: {
+                    type: Object,
+                    observer: "_translationChanged",
+                    notify: true
                 },
 
                 /**
@@ -52,16 +62,6 @@
                  */
                 dm4: {
                     type: Object
-                },
-
-                /**
-                 * The canvas translation in pixel.
-                 * An object with `x` and `y` properties.
-                 */
-                _translation: {
-                    type: Object,
-                    value: {x: 0, y: 0},
-                    observer: "_translationChanged"
                 },
 
                 /**
@@ -84,7 +84,6 @@
             // --------------------------------------------------------------------------------------------- Private API
 
             _topicmapChanged: function(topicmap) {
-                this._translation = this._getTranslation(topicmap);
                 // console.log("_topicmapChanged: setting up canvas translation", this._translation);
                 this._drawCanvas();
             },
@@ -97,16 +96,15 @@
                     // console.log("canvas track start");
                     break;
                 case "track":
-                    this._translation = {
-                        x: this._translation.x + e.detail.ddx,
-                        y: this._translation.y + e.detail.ddy
+                    this.translation = {
+                        x: this.translation.x + e.detail.ddx,
+                        y: this.translation.y + e.detail.ddy
                     }
                     // this.fire("topic-moving", {topic: this.topic});
                     break;
                 case "end":
                     // console.log("canvas track end");
-                    this._setTranslation(this.topicmap, this._translation);
-                    this.fire("topicmap-move", {translation: this._translation});
+                    this.fire("topicmap-move", {translation: this.translation});
                     break;
                 }
             },
@@ -114,7 +112,7 @@
             _canvasSizeChanged: function(size) {
                 console.log("canvas size changed", size);
                 // Note: once its size has changed a canvas looses its translation
-                this._ctx.translate(this._translation.x, this._translation.y);
+                this._ctx.translate(this.translation.x, this.translation.y);
                 this._drawCanvas();
             },
 
@@ -141,7 +139,7 @@
                     return;
                 }
                 //
-                this._ctx.clearRect(-this._translation.x, -this._translation.y, this.size.width, this.size.height);
+                this._ctx.clearRect(-this.translation.x, -this.translation.y, this.size.width, this.size.height);
                 this._drawAssociations();
             },
 
@@ -183,22 +181,6 @@
 
             _getY: function(viewProps) {
                 return viewProps["dm4.topicmaps.y"];
-            },
-
-            // ---
-
-            _getTranslation: function(topicmap) {
-                var _translation = topicmap.info.childs["dm4.topicmaps.state"].childs["dm4.topicmaps.translation"];
-                return {
-                    x: _translation.childs["dm4.topicmaps.translation_x"].value,
-                    y: _translation.childs["dm4.topicmaps.translation_y"].value
-                }
-            },
-
-            _setTranslation: function(topicmap, translation) {
-                var _translation = topicmap.info.childs["dm4.topicmaps.state"].childs["dm4.topicmaps.translation"];
-                _translation.childs["dm4.topicmaps.translation_x"].value = translation.x;
-                _translation.childs["dm4.topicmaps.translation_y"].value = translation.y;
             }
         });
     </script>

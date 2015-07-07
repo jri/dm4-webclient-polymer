@@ -4,7 +4,7 @@
     DM4.Utils = {
 
         getTopicTypes: function() {
-            return document.createElement("iron-meta").byKey("dm4").topicTypes;
+            return new Polymer.IronMeta().byKey("dm4").topicTypes;
         },
 
         getTopicType: function(typeUri) {

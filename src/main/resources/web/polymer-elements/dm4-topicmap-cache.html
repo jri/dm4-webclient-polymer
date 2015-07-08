@@ -1,12 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="dm4-rest-client.html">
 
 <dom-module id="dm4-topicmap-cache">
-
-    <template>
-        <iron-ajax id="getTopicmap" content-type="application/json" headers='{"Accept": "application/json"}'>
-        </iron-ajax>
-    </template>
 
     <script>
         Polymer({
@@ -23,6 +18,10 @@
                 }
             },
 
+            behaviors: [
+                DM4.RestClient
+            ],
+
             // ---------------------------------------------------------------------------------------------- Public API
 
             getTopicmap: function(topicmapId, callback) {
@@ -31,7 +30,9 @@
                     console.log("loading topicmap", topicmapId, "from cache");
                 } else {
                     console.log("loading topicmap", topicmapId, "from server");
-                    promise = this.__getTopicmap(topicmapId);
+                    // Note: we don't pass the callback to the RestClient as we are insterested in the promise.
+                    // As a result the callback is not bound to anything. Binding is up to the topicmap cache user.
+                    promise = this.restc.getTopicmap(topicmapId);
                     this.topicmaps[topicmapId] = promise;
                 }
                 promise.then(function(request) {
@@ -39,15 +40,6 @@
                     topicmap.selection = topicmap.selection || [];  // init selection state
                     callback(topicmap);
                 });
-            },
-
-            // --------------------------------------------------------------------------------------------- Private API
-
-            // === Requests ===
-
-            __getTopicmap: function(topicmapId) {
-                this.$.getTopicmap.url = "http://localhost:8080/topicmap/" + topicmapId;
-                return this.$.getTopicmap.generateRequest().completes;
             }
         });
     </script>

@@ -1,0 +1,97 @@
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
+<script>
+    DM4.RestClient = {
+
+        created: function() {
+
+            var self = this;
+
+            this.restc = {
+
+                // === Topics ===
+
+                getTopic: function(topicId, callback) {
+                    return this._request({
+                        url: "http://localhost:8080/core/topic/" + topicId,
+                        params: {include_childs: true},
+                        contentType: "application/json"
+                    }, callback);
+                },
+
+                getRelatedTopics: function(topicId, callback) {
+                    return this._request({
+                        url: "http://localhost:8080/core/topic/" + topicId + "/related_topics",
+                        contentType: "application/json"
+                    }, callback);
+                },
+
+                createTopic: function(topicTypeUri, callback) {
+                    return this._request({
+                        method: "POST",
+                        url: "http://localhost:8080/core/topic",
+                        contentType: "application/json",
+                        body: JSON.stringify({type_uri: topicTypeUri})
+                    }, callback);
+                },
+
+                updateTopic: function(topic, callback) {
+                    return this._request({
+                        method: "PUT",
+                        url: "http://localhost:8080/core/topic/" + topic.id,
+                        contentType: "application/json",
+                        body: JSON.stringify(topic)
+                    }, callback);
+                },
+
+                // === Topicmaps ===
+
+                getTopicmap: function(topicmapId, callback) {
+                    return this._request({
+                        url: "http://localhost:8080/topicmap/" + topicmapId,
+                        contentType: "application/json",
+                        headers: {Accept: "application/json"}
+                    }, callback);
+                },
+
+                addTopicToTopicmap: function(topicmapId, topicId, viewProps, callback) {
+                    return this._request({
+                        method: "POST",
+                        url: "http://localhost:8080/topicmap/" + topicmapId + "/topic/" + topicId,
+                        contentType: "application/json",
+                        body: JSON.stringify(viewProps)
+                    }, callback);
+                },
+
+                setTopicPosition: function(topicmapId, topicId, x, y, callback) {
+                    return this._request({
+                        method: "PUT",
+                        url: "http://localhost:8080/topicmap/" + topicmapId + "/topic/" + topicId + "/" + x + "/" + y,
+                        contentType: "application/json"
+                    }, callback);
+                },
+
+                setTopicmapTranslation: function(topicmapId, x, y, callback) {
+                    return this._request({
+                        method: "PUT",
+                        url: "http://localhost:8080/topicmap/" + topicmapId + "/translation/" + x + "/" + y,
+                        contentType: "application/json"
+                    }, callback);
+                },
+
+                // ----------------------------------------------------------------------------------------- Private API
+
+                _request: function(config, callback) {
+                    var promise = self.create("iron-ajax", config).generateRequest().completes;
+                    if (callback) {
+                        promise.then(function(request) {
+                            callback.bind(self)(request.response);
+                        });
+                    } else {
+                        return promise;
+                    }
+                }
+            }
+        }
+    }
+</script>

@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="dm4-topic-renderer.html">
 <link rel="import" href="dm4-topic-list.html">
+<link rel="import" href="dm4-rest-client.html">
 <link rel="import" href="dm4-utils.html">
 
 <dom-module id="dm4-detail-panel">
@@ -145,6 +146,7 @@
             ],
 
             behaviors: [
+                DM4.RestClient,
                 DM4.Utils
             ],
 
@@ -277,22 +279,13 @@
                         // console.log("\"Related\" tab is selected");
                         if (!this.relatedTopics) {
                             // console.log("requesting related topics", topic)
-                            this.__getRelatedTopics(topic.id).then(function(request) {
+                            this.restc.getRelatedTopics(topic.id, function(response) {
                                 // console.log("-->", request.response.items);
-                                this.relatedTopics = request.response.items;
-                            }.bind(this));
+                                this.relatedTopics = response.items;
+                            });
                         }
                     }
                 }
-            },
-
-            // === Requests ===
-
-            __getRelatedTopics: function(topicId) {
-                return this.create("iron-ajax", {
-                    url: "http://localhost:8080/core/topic/" + topicId + "/related_topics",
-                    contentType: "application/json"
-                }).generateRequest().completes;
             }
         });
     </script>

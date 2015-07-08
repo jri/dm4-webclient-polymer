@@ -1,11 +1,11 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-meta/iron-meta.html">
-<link rel="import" href="dm4-toolbar.html">
-<link rel="import" href="dm4-topicmap-panel.html">
 <link rel="import" href="dm4-detail-panel.html">
-<link rel="import" href="dm4-type-cache.html">
+<link rel="import" href="dm4-rest-client.html">
+<link rel="import" href="dm4-toolbar.html">
 <link rel="import" href="dm4-topicmap-cache.html">
+<link rel="import" href="dm4-topicmap-panel.html">
+<link rel="import" href="dm4-type-cache.html">
 
 <dom-module id="dm4-webclient">
 
@@ -33,14 +33,6 @@
         <dm4-type-cache dm4="{{dm4}}"></dm4-type-cache>
         <dm4-topicmap-cache id="topicmapCache"></dm4-topicmap-cache>
         <iron-meta key="dm4" value="[[dm4]]"></iron-meta>
-
-        <iron-ajax id="createTopic" method="POST" url="http://localhost:8080/core/topic" content-type="application/json"
-            on-response="_showTopic">
-        </iron-ajax>
-        <iron-ajax id="getTopic" params='{"include_childs": true}' content-type="application/json"
-            on-response="_showTopicInDetailPanel">
-        </iron-ajax>
-        <iron-ajax id="updateTopic" method="PUT" content-type="application/json"></iron-ajax>
     </template>
 
     <script>
@@ -71,12 +63,11 @@
                 "topicmap-select": "_selectTopicmap"
             },
 
-            // --------------------------------------------------------------------------------------------- Private API
+            behaviors: [
+                DM4.RestClient
+            ],
 
-            _getTopicAndShowInDetailPanel: function(topicId) {
-                this.$.detailPanel.clear();
-                this.__getTopic(topicId);
-            },
+            // --------------------------------------------------------------------------------------------- Private API
 
             // === Event Handler ===
 
@@ -90,7 +81,10 @@
                 var topicTypeUri = e.detail.topicType.uri;
                 // console.log("Creating topic of type \"" + topicTypeUri + "\"");
                 this.$.detailPanel.clear();
-                this.__createTopic(topicTypeUri);
+                this.restc.createTopic(topicTypeUri, function(topic) {
+                    this.$.topicmapPanel.showTopic(topic, true);   // select=true
+                    this.$.detailPanel.showForm(topic);
+                });
             },
 
             _updateTopic: function(e) {
@@ -131,34 +125,18 @@
                 }
             },
 
-            _showTopic: function(e) {
-                var topic = e.detail.response;
-                this.$.topicmapPanel.showTopic(topic, true);   // select=true
-                this.$.detailPanel.showForm(topic);
-            },
-
-            _showTopicInDetailPanel: function(e) {
-                var topic = e.detail.response;
-                this.$.detailPanel.showTopic(topic);
+            _getTopicAndShowInDetailPanel: function(topicId) {
+                this.$.detailPanel.clear();
+                this.restc.getTopic(topicId, function(topic) {
+                    this.$.detailPanel.showTopic(topic);
+                });
             },
 
             // === Requests ===
 
-            __getTopic: function(topicId) {
-                this.$.getTopic.url = "http://localhost:8080/core/topic/" + topicId;
-                this.$.getTopic.generateRequest();
-            },
-
-            __createTopic: function(topicTypeUri) {
-                this.$.createTopic.body = JSON.stringify({type_uri: topicTypeUri});
-                this.$.createTopic.generateRequest();
-            },
-
             __updateTopic: function(topic) {
                 if (topic) {
-                    this.$.updateTopic.url = "http://localhost:8080/core/topic/" + topic.id;
-                    this.$.updateTopic.body = JSON.stringify(topic);
-                    this.$.updateTopic.generateRequest();
+                    this.restc.updateTopic(topic);
                 }
             }
         });

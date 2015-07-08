@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="dm4-canvas-renderer.html">
 <link rel="import" href="dm4-context-menu.html">
+<link rel="import" href="dm4-rest-client.html">
 
 <dom-module id="dm4-topicmap-panel">
 
@@ -18,9 +19,6 @@
         <dm4-canvas-renderer topicmap="[[topicmap]]" translation={{translation}} size="[[size]]" dm4="[[dm4]]">
         </dm4-canvas-renderer>
         <dm4-context-menu id="menu"></dm4-context-menu>
-        <iron-ajax id="addTopicToTopicmap"     method="POST" content-type="application/json"></iron-ajax>
-        <iron-ajax id="setTopicPosition"       method="PUT"  content-type="application/json"></iron-ajax>
-        <iron-ajax id="setTopicmapTranslation" method="PUT"  content-type="application/json"></iron-ajax>
     </template>
 
     <script>
@@ -63,6 +61,7 @@
             },
 
             behaviors: [
+                DM4.RestClient,
                 Polymer.IronResizableBehavior
             ],
 
@@ -89,7 +88,7 @@
                     this.setSelectedTopic(topic.id);
                 }
                 // update DB
-                this.__addTopicToTopicmap(this.topicmap.info.id, topic.id, topic.view_props);
+                this.restc.addTopicToTopicmap(this.topicmap.info.id, topic.id, topic.view_props);
             },
 
             setSelectedTopic: function(topicId) {
@@ -115,15 +114,15 @@
                 console.log("_storeTopicPosition");
                 var topic = e.detail.topic;
                 var viewProps = topic.view_props;
-                this.__setTopicPosition(this.topicmap.info.id, topic.id, viewProps["dm4.topicmaps.x"],
-                                                                         viewProps["dm4.topicmaps.y"]);
+                this.restc.setTopicPosition(this.topicmap.info.id, topic.id, viewProps["dm4.topicmaps.x"],
+                                                                             viewProps["dm4.topicmaps.y"]);
             },
 
             _storeTopicmapPosition: function(e) {
                 var translation = e.detail.translation;
                 // console.log("_storeTopicmapPosition", translation, this.translation);
-                this._setTranslation(this.topicmap, translation);                                   // update model
-                this.__setTopicmapTranslation(this.topicmap.info.id, translation.x, translation.y); // update DB
+                this._setTranslation(this.topicmap, translation);                                       // update model
+                this.restc.setTopicmapTranslation(this.topicmap.info.id, translation.x, translation.y); // update DB
             },
 
             _showTopicContextMenu: function(e) {
@@ -143,26 +142,6 @@
                     width: this.clientWidth,
                     height: this.clientHeight
                 }
-            },
-
-            // === Requests ===
-
-            __addTopicToTopicmap: function(topicmapId, topicId, viewProps) {
-                this.$.addTopicToTopicmap.url = "http://localhost:8080/topicmap/" + topicmapId + "/topic/" + topicId;
-                this.$.addTopicToTopicmap.body = JSON.stringify(viewProps);
-                this.$.addTopicToTopicmap.generateRequest();
-            },
-
-            __setTopicPosition: function(topicmapId, topicId, x, y) {
-                this.$.setTopicPosition.url = "http://localhost:8080/topicmap/" + topicmapId + "/topic/" + topicId +
-                    "/" + x + "/" + y;
-                this.$.setTopicPosition.generateRequest();
-            },
-
-            __setTopicmapTranslation: function(topicmapId, x, y) {
-                this.$.setTopicmapTranslation.url = "http://localhost:8080/topicmap/" + topicmapId + "/translation/" +
-                    x + "/" + y;
-                this.$.setTopicmapTranslation.generateRequest();
             },
 
             // === Modell Access ===

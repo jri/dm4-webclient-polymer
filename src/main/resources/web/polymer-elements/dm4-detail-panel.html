@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="dm4-topic-renderer.html">
+<link rel="import" href="dm4-topic-list.html">
 <link rel="import" href="dm4-utils.html">
 
 <dom-module id="dm4-detail-panel">
@@ -22,22 +23,39 @@
             padding: 1em;
         }
 
-        iron-pages > div:nth-child(1) {
+        #contentPage {
             display: flex;
             flex-flow: column;
         }
 
-        #topic-info {
+        #relatedPage {
+            overflow: auto;
+        }
+
+        #topicContent {
             overflow: auto;
         }
 
         #buttons {
             flex: none;
+            margin-top: 0.8em;
+        }
+
+        paper-button {
+            font-size: 14px;
+            margin-left: 0;         /* Overrides 0.29em */
+        }
+
+        /* Note: paper-button lacks a CSS mixin for styling the button content. */
+        /* So we are forced to pierce through the Shadow DOM boundary.          */
+        paper-button::shadow > .content {
+            padding-top:    0.5em;  /* Overrides 0.7em */
+            padding-bottom: 0.5em;  /* Overrides 0.7em */
         }
 
         paper-tabs {
             flex: none;
-            height: 32px;   /* Override 48px */
+            height: 32px;           /* Overrides 48px */
         }
 
         paper-tab:not(.iron-selected) {
@@ -46,15 +64,15 @@
 
         paper-tab {
             --paper-tab-content: {
-                font-weight: normal !important;     /* Override 700 for tab content of focused tabs */
+                font-weight: normal !important;     /* Overrides 700 for content of focused tabs */
             }
         }
     </style>
 
     <template>
-        <iron-pages selected="[[selectedTab]]">
-            <div>
-                <div id="topic-info">
+        <iron-pages selected="[[selectedTab]]" attr-for-selected="id">
+            <div id="contentPage">
+                <div id="topicContent">
                     <h2>[[topic.value]]</h2>
                     <dm4-topic-renderer topic="[[topic]]" form-mode="[[formMode]]"></dm4-topic-renderer>
                 </div>
@@ -69,15 +87,18 @@
                     </template>
                 </div>
             </div>
-            <div>
+            <div id="relatedPage">
                 <h2>[[topic.value]]</h2>
-                <h3>Related Topics</h3>
+                <h4>Related Topics</h4>
+                <dm4-topic-list topics="[[relatedTopics]]"><dm4-topic-list>
             </div>
         </iron-pages>
-        <paper-tabs selected="{{selectedTab}}" no-bar>
-            <paper-tab>Info</paper-tab>
-            <paper-tab>Related</paper-tab>
-        </paper-tabs>
+        <template is="dom-if" if="[[_tabVisibility(topic, formMode)]]">
+            <paper-tabs selected="{{selectedTab}}" attr-for-selected="id" no-bar>
+                <paper-tab id="contentPage">Content</paper-tab>
+                <paper-tab id="relatedPage">Related</paper-tab>
+            </paper-tabs>
+        </template>
     </template>
 
     <script>
@@ -91,7 +112,8 @@
                  * If `null`/`undefined` nothing is displayed.
                  */
                 topic: {
-                    type: Object
+                    type: Object,
+                    observer: "_topicChanged"
                 },
 
                 /**
@@ -103,13 +125,24 @@
                 },
 
                 /**
-                 * The tab currently selected. "0" or "1".
+                 * The topics displayed in the "Related" page.
+                 */
+                relatedTopics: {
+                    type: Array
+                },
+
+                /**
+                 * The tab currently selected: "contentPage" or "relatedPage".
                  */
                 selectedTab: {
                     type: String,
-                    value: "0"
+                    value: "contentPage"
                 }
             },
+
+            observers: [
+                "_showRelatedTopics(topic, selectedTab)"
+            ],
 
             behaviors: [
                 DM4.Utils
@@ -202,6 +235,19 @@
                 return assocDef.child_cardinality_uri == "dm4.core.many";
             },
 
+            // ---
+
+            _tabVisibility: function(topic, formMode) {
+                return topic && !formMode;
+            },
+
+            // === Observer ===
+
+            _topicChanged: function(topic) {
+                // console.log("_topicChanged", topic);
+                this.relatedTopics = null;
+            },
+
             // === Event Handler ===
 
             _enterFormMode: function() {
@@ -223,6 +269,31 @@
                     submit: true
                 });
             },
+
+            _showRelatedTopics: function(topic, selectedTab) {
+                if (topic) {
+                    // console.log("_showRelatedTopics", topic, selectedTab);
+                    if (selectedTab == "relatedPage") {
+                        // console.log("\"Related\" tab is selected");
+                        if (!this.relatedTopics) {
+                            // console.log("requesting related topics", topic)
+                            this.__getRelatedTopics(topic.id).then(function(request) {
+                                // console.log("-->", request.response.items);
+                                this.relatedTopics = request.response.items;
+                            }.bind(this));
+                        }
+                    }
+                }
+            },
+
+            // === Requests ===
+
+            __getRelatedTopics: function(topicId) {
+                return this.create("iron-ajax", {
+                    url: "http://localhost:8080/core/topic/" + topicId + "/related_topics",
+                    contentType: "application/json"
+                }).generateRequest().completes;
+            }
         });
     </script>
 

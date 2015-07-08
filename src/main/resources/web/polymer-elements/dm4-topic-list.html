@@ -1,0 +1,34 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="dm4-topic-list">
+
+    <style>
+    </style>
+
+    <template>
+        <template is="dom-repeat" items="[[topics]]" as="topic">
+            <div>
+                <img src="">
+                <a>[[topic.value]]</a>
+                <div></div>
+            </div>
+        </template>
+    </template>
+
+    <script>
+        Polymer({
+            is: "dm4-topic-list",
+
+            properties: {
+
+                /**
+                 * The listed topics.
+                 */
+                topics: {
+                    type: Array
+                }
+            }
+        });
+    </script>
+
+</dom-module>

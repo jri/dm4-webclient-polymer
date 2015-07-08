@@ -8,6 +8,13 @@
         paper-button[active] {
             background-color: rgba(0, 0, 0, 0.25);
         }
+
+        /* Note: paper-button lacks a CSS mixin for styling the button content. */
+        /* So we are forced to pierce through the Shadow DOM boundary.          */
+        paper-button::shadow > .content {
+            padding-top: 0.5em;     /* Overrides 0.7em */
+            padding-bottom: 0.5em;  /* Overrides 0.7em */
+        }
     </style>
 
     <template>

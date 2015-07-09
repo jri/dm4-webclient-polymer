@@ -4,11 +4,9 @@
 <dom-module id="dm4-type-cache">
 
     <template>
-        <iron-ajax auto url="http://localhost:8080/core/topictype/all" content-type="application/json"
-            on-response="_setTopicTypes">
+        <iron-ajax auto url="/core/topictype/all" content-type="application/json" on-response="_setTopicTypes">
         </iron-ajax>
-        <iron-ajax auto url="http://localhost:8080/core/assoctype/all" content-type="application/json"
-            on-response="_setAssocTypes">
+        <iron-ajax auto url="/core/assoctype/all" content-type="application/json" on-response="_setAssocTypes">
         </iron-ajax>
     </template>
 

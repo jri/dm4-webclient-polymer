@@ -13,7 +13,7 @@
 
                 getTopic: function(topicId, callback) {
                     return this._request({
-                        url: "http://localhost:8080/core/topic/" + topicId,
+                        url: "/core/topic/" + topicId,
                         params: {include_childs: true},
                         contentType: "application/json"
                     }, callback);
@@ -21,7 +21,7 @@
 
                 getRelatedTopics: function(topicId, callback) {
                     return this._request({
-                        url: "http://localhost:8080/core/topic/" + topicId + "/related_topics",
+                        url: "/core/topic/" + topicId + "/related_topics",
                         contentType: "application/json"
                     }, callback);
                 },
@@ -29,7 +29,7 @@
                 createTopic: function(topicTypeUri, callback) {
                     return this._request({
                         method: "POST",
-                        url: "http://localhost:8080/core/topic",
+                        url: "/core/topic",
                         contentType: "application/json",
                         body: JSON.stringify({type_uri: topicTypeUri})
                     }, callback);
@@ -38,7 +38,7 @@
                 updateTopic: function(topic, callback) {
                     return this._request({
                         method: "PUT",
-                        url: "http://localhost:8080/core/topic/" + topic.id,
+                        url: "/core/topic/" + topic.id,
                         contentType: "application/json",
                         body: JSON.stringify(topic)
                     }, callback);
@@ -48,7 +48,7 @@
 
                 getTopicmap: function(topicmapId, callback) {
                     return this._request({
-                        url: "http://localhost:8080/topicmap/" + topicmapId,
+                        url: "/topicmap/" + topicmapId,
                         contentType: "application/json",
                         headers: {Accept: "application/json"}
                     }, callback);
@@ -57,7 +57,7 @@
                 addTopicToTopicmap: function(topicmapId, topicId, viewProps, callback) {
                     return this._request({
                         method: "POST",
-                        url: "http://localhost:8080/topicmap/" + topicmapId + "/topic/" + topicId,
+                        url: "/topicmap/" + topicmapId + "/topic/" + topicId,
                         contentType: "application/json",
                         body: JSON.stringify(viewProps)
                     }, callback);
@@ -66,7 +66,7 @@
                 setTopicPosition: function(topicmapId, topicId, x, y, callback) {
                     return this._request({
                         method: "PUT",
-                        url: "http://localhost:8080/topicmap/" + topicmapId + "/topic/" + topicId + "/" + x + "/" + y,
+                        url: "/topicmap/" + topicmapId + "/topic/" + topicId + "/" + x + "/" + y,
                         contentType: "application/json"
                     }, callback);
                 },
@@ -74,7 +74,7 @@
                 setTopicmapTranslation: function(topicmapId, x, y, callback) {
                     return this._request({
                         method: "PUT",
-                        url: "http://localhost:8080/topicmap/" + topicmapId + "/translation/" + x + "/" + y,
+                        url: "/topicmap/" + topicmapId + "/translation/" + x + "/" + y,
                         contentType: "application/json"
                     }, callback);
                 },

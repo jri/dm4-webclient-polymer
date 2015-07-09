@@ -23,8 +23,8 @@
     <template>
         <!-- Workspaces -->
 
-        <iron-ajax auto url="http://localhost:8080/core/topic/by_type/dm4.workspaces.workspace"
-            content-type="application/json" last-response="{{workspaces}}">
+        <iron-ajax auto url="/core/topic/by_type/dm4.workspaces.workspace" content-type="application/json"
+            last-response="{{workspaces}}">
         </iron-ajax>
 
         Workspace
@@ -36,8 +36,8 @@
 
         <!-- Topicmaps -->
 
-        <iron-ajax auto url="http://localhost:8080/core/topic/by_type/dm4.topicmaps.topicmap"
-            content-type="application/json" last-response="{{topicmaps}}">
+        <iron-ajax auto url="/core/topic/by_type/dm4.topicmaps.topicmap" content-type="application/json"
+            last-response="{{topicmaps}}">
         </iron-ajax>
 
         Topicmap

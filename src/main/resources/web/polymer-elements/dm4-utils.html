@@ -3,12 +3,37 @@
 <script>
     DM4.Utils = {
 
+        getTopicType: function(typeUri) {
+            return this.getTopicTypes()[typeUri];
+        },
+
         getTopicTypes: function() {
             return new Polymer.IronMeta().byKey("dm4").topicTypes;
         },
 
-        getTopicType: function(typeUri) {
-            return this.getTopicTypes()[typeUri];
+        getAssocType: function(typeUri) {
+            return this.getAssocTypes()[typeUri];
+        },
+
+        getAssocTypes: function() {
+            return new Polymer.IronMeta().byKey("dm4").assocTypes;
+        },
+
+        // ---
+
+        DEFAULT_TOPIC_ICON: "/de.deepamehta.webclient/images/ball-gray.png",
+
+        getIcon: function(topic) {
+            return this.getTopicType(topic.type_uri).getViewConfig("dm4.webclient.view_config", "dm4.webclient.icon") ||
+                this.DEFAULT_TOPIC_ICON;
+        },
+
+        getTopicTypeName: function(topic) {
+            return this.getTopicType(topic.type_uri).value;
+        },
+
+        getAssocTypeName: function(topic) {
+            return this.getAssocType(topic.assoc.type_uri).value;
         }
     }
 </script>

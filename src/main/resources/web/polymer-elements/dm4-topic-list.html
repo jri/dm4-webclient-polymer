@@ -1,16 +1,50 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="dm4-utils.html">
 
 <dom-module id="dm4-topic-list">
 
     <style>
+
+        .group-heading {
+            font-size: 12px;
+            color: #aaa;
+            margin-top:    16px;
+            margin-bottom: -4px;
+        }
+
+        .list-item {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .list-item > div:nth-child(1) {
+            flex: 0 0 48px;
+        }
+
+        img {
+            margin-top:  -2px;
+            margin-left: 14px;
+            width: 24px;
+        }
+
+        .assoc-type-name {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 1px;
+        }
     </style>
 
     <template>
         <template is="dom-repeat" items="[[topics]]" as="topic">
-            <div>
-                <img src="">
-                <a>[[topic.value]]</a>
-                <div></div>
+            <div class="group-heading">[[getTopicTypeName(topic)]]</div>
+            <div class="list-item">
+                <div>
+                    <img src="[[getIcon(topic)]]">
+                </div>
+                <div>
+                    <a href="">[[topic.value]]</a>
+                    <div class="assoc-type-name">[[getAssocTypeName(topic)]]</div>
+                </div>
             </div>
         </template>
     </template>
@@ -27,7 +61,11 @@
                 topics: {
                     type: Array
                 }
-            }
+            },
+
+            behaviors: [
+                DM4.Utils
+            ]
         });
     </script>
 

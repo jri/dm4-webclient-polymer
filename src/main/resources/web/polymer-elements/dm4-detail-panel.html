@@ -147,8 +147,7 @@
             ],
 
             behaviors: [
-                DM4.RestClient,
-                DM4.TypeCache
+                DM4.RestClient
             ],
 
             // ---------------------------------------------------------------------------------------------- Public API
@@ -178,25 +177,25 @@
             // --------------------------------------------------------------------------------------------- Private API
 
             _buildTopicModel: function(topic) {
-                var topicType = this.getTopicType(topic.typeUri);
-                if (topicType.isSimple()) {
+                var topicType = topic.type;
+                if (topicType.isSimple) {
                     if (this._isDirty(topic)) {
-                        console.log("new", this.getTopicType(topic.typeUri).value, '"' + topic.value + '" old "' +
-                            topic.oldValue + '" --> dirty');
+                        console.log("new", topicType.value, '"' + topic.value + '" old "' + topic.oldValue +
+                            '" --> dirty');
                         return {
                             id: topic.id,
                             value: topic.value
                         }
                     } else {
-                        console.log("new", this.getTopicType(topic.typeUri).value, '"' + topic.value + '" old "' +
-                            topic.oldValue + '" --> clean');
+                        console.log("new", topicType.value, '"' + topic.value + '" old "' + topic.oldValue +
+                            '" --> clean');
                     }
                 } else {
                     var childs = null;
                     var self = this;
                     topicType.assocDefs.forEach(function(assocDef) {
                         var childTypeUri = assocDef.childTypeUri;
-                        if (self._isMany(assocDef)) {
+                        if (assocDef.isMany) {
                             var childTopics = topic.childs[childTypeUri];
                             childTopics.forEach(function(childTopic) {
                                 var value = self._buildTopicModel(childTopic);
@@ -232,10 +231,6 @@
 
             _isDirty: function(topic) {
                 return topic.value != topic.oldValue;
-            },
-
-            _isMany: function(assocDef) {
-                return assocDef.child_cardinality_uri == "dm4.core.many";
             },
 
             // ---

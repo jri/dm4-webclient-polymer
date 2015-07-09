@@ -4,8 +4,8 @@
 <dom-module id="dm4-multi-renderer">
 
     <template>
-        <template is="dom-repeat" items="{{topics}}" as="topic">
-            <dm4-topic-renderer topic="{{topic}}" form-mode="{{formMode}}"></dm4-topic-renderer>
+        <template is="dom-repeat" items="[[topics]]" as="topic">
+            <dm4-topic-renderer topic="[[topic]]" form-mode="[[formMode]]"></dm4-topic-renderer>
         </template>
     </template>
 

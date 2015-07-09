@@ -6,13 +6,13 @@
 <dom-module id="dm4-composite-renderer">
 
     <template>
-        <template is="dom-repeat" items="{{_getAssocDefs(topic)}}" as="assocDef">
-            <template is="dom-if" if="{{_isOne(assocDef)}}" restamp>
-                <dm4-topic-renderer topic="{{_getChildTopic(topic, assocDef, formMode)}}" form-mode="{{formMode}}">
+        <template is="dom-repeat" items="[[topic.type.assocDefs]]" as="assocDef">
+            <template is="dom-if" if="[[assocDef.isOne]]" restamp>
+                <dm4-topic-renderer topic="[[_getChildTopic(topic, assocDef, formMode)]]" form-mode="[[formMode]]">
                 </dm4-topic-renderer>
             </template>
-            <template is="dom-if" if="{{_isMany(assocDef)}}" restamp>
-                <dm4-multi-renderer topics="{{_getChildTopics(topic, assocDef, formMode)}}" form-mode="{{formMode}}">
+            <template is="dom-if" if="[[assocDef.isMany]]" restamp>
+                <dm4-multi-renderer topics="[[_getChildTopics(topic, assocDef, formMode)]]" form-mode="[[formMode]]">
                 </dm4-multi-renderer>
             </template>
         </template>
@@ -40,15 +40,6 @@
                 }
             },
 
-            behaviors: [
-                DM4.TypeCache
-            ],
-
-            _getAssocDefs: function(topic) {
-                // console.log("_getAssocDefs topic", topic);
-                return topic && this.getTopicType(topic.typeUri).assocDefs;
-            },
-
             _getChildTopic: function(topic, assocDef, formMode) {
                 var childTypeUri = assocDef.childTypeUri;
                 var childTopic = topic && topic.childs[childTypeUri];
@@ -73,22 +64,12 @@
             },
 
             _createEmptyTopic: function(typeUri) {
-                return {
+                return new DM4.Topic({
                     id: -1,
-                    typeUri: typeUri,
+                    type_uri: typeUri,
                     value: "",
                     childs: {}
-                }
-            },
-
-            _isOne: function(assocDef) {
-                // console.log("_isOne assocDef", assocDef);
-                return assocDef.child_cardinality_uri == "dm4.core.one";
-            },
-
-            _isMany: function(assocDef) {
-                // console.log("_isMany assocDef", assocDef);
-                return assocDef.child_cardinality_uri == "dm4.core.many";
+                });
             }
         });
     </script>

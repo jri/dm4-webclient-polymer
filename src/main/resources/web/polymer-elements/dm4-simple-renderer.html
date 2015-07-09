@@ -1,6 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
-<link rel="import" href="dm4-model.html">
 
 <dom-module id="dm4-simple-renderer">
 
@@ -30,9 +29,9 @@
     </style>
 
     <template>
-        <div class="label">{{_getTypeName(topic)}}</div>
-        <div class="value" hidden="{{formMode}}" on-tap="_enterFormMode">{{topic.value}}</div>
-        <paper-input id="input" hidden="{{!formMode}}" on-keypress="_keyPressed" on-blur="_blurred"
+        <div class="label">[[topic.type.value]]</div>
+        <div class="value" hidden="[[formMode]]" on-tap="_enterFormMode">[[topic.value]]</div>
+        <paper-input id="input" hidden="[[!formMode]]" on-keypress="_keyPressed" on-blur="_blurred"
             value="{{topic.value}}" no-label-float>
         </paper-input>
         <!-- Possible optimization: instantiate paper-input component only when it edit mode.                    -->
@@ -63,10 +62,6 @@
 
             observers: [
                 "_initTopic(topic, formMode)"
-            ],
-
-            behaviors: [
-                DM4.TypeCache
             ],
 
             // ---------------------------------------------------------------------------------------------- Public API
@@ -113,13 +108,6 @@
                     topic: this.topic,
                     submit: submit
                 });
-            },
-
-            // --- Calculated Bindings ---
-
-            _getTypeName: function(topic) {
-                // console.log("_getTypeName topic", topic);
-                return topic && this.getTopicType(topic.typeUri).value;
             }
         });
     </script>

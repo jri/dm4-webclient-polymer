@@ -1,16 +1,15 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="dm4-simple-renderer.html">
 <link rel="import" href="dm4-composite-renderer.html">
-<link rel="import" href="dm4-model.html">
 
 <dom-module id="dm4-topic-renderer">
 
     <template>
-        <template is="dom-if" if="{{_isSimple(topic)}}" restamp>
-            <dm4-simple-renderer topic="{{topic}}" form-mode="{{formMode}}"></dm4-simple-renderer>
+        <template is="dom-if" if="[[topic.type.isSimple]]" restamp>
+            <dm4-simple-renderer topic="[[topic]]" form-mode="[[formMode]]"></dm4-simple-renderer>
         </template>
-        <template is="dom-if" if="{{_isComposite(topic)}}" restamp>
-            <dm4-composite-renderer topic="{{topic}}" form-mode="{{formMode}}"></dm4-composite-renderer>
+        <template is="dom-if" if="[[topic.type.isComposite]]" restamp>
+            <dm4-composite-renderer topic="[[topic]]" form-mode="[[formMode]]"></dm4-composite-renderer>
         </template>
     </template>
 
@@ -34,20 +33,6 @@
                 formMode: {
                     type: Boolean
                 }
-            },
-
-            behaviors: [
-                DM4.TypeCache
-            ],
-
-            _isSimple: function(topic) {
-                // console.log("_isSimple topic", topic);
-                return topic && this.getTopicType(topic.typeUri).isSimple();
-            },
-
-            _isComposite: function(topic) {
-                // console.log("_isComposite topic", topic);
-                return topic && this.getTopicType(topic.typeUri).isComposite();
             }
         });
     </script>

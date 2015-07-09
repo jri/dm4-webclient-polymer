@@ -29,8 +29,10 @@
 
     DM4.Association = function(assoc) {
         DM4.Object.call(this, assoc);
-        this.role1 = assoc.role_1;
-        this.role2 = assoc.role_2;
+        if (assoc) {
+            this.role1 = assoc.role_1;
+            this.role2 = assoc.role_2;
+        }
     }
 
     DM4.Type = function(type) {
@@ -50,6 +52,15 @@
 
     DM4.AssociationType = function(assocType) {
         DM4.Type.call(this, assocType);
+    }
+
+    DM4.AssociationDefinition = function(assocDef) {
+        DM4.Association.call(this, assocDef);
+        this.parentTypeUri = this.getRole("dm4.core.parent_type").topic_uri;
+        this.childTypeUri  = this.getRole("dm4.core.child_type").topic_uri;
+        this.parentCardinalityUri = assocDef.parent_cardinality_uri;
+        this.childCardinalityUri  = assocDef.child_cardinality_uri;
+        this.customAssocTypeUri   = assocDef.custom_assoc_type_uri;
     }
 
     // === Prototypes ===
@@ -84,11 +95,11 @@
 
     DM4.Type.prototype = {
 
-        isSimple: function() {
-            return !this.isComposite();
+        get isSimple() {
+            return !this.isComposite;
         },
 
-        isComposite: function() {
+        get isComposite() {
             return this.dataTypeUri == "dm4.core.composite";
         },
 
@@ -102,6 +113,18 @@
     DM4.TopicType.prototype = new DM4.Type();
 
     DM4.AssociationType.prototype = new DM4.Type();
+
+    DM4.AssociationDefinition.prototype = new DM4.Association();
+    Object.defineProperty(DM4.AssociationDefinition.prototype, "isOne", {
+        get: function() {
+            return this.childCardinalityUri == "dm4.core.one";
+        }
+    });
+    Object.defineProperty(DM4.AssociationDefinition.prototype, "isMany", {
+        get: function() {
+            return this.childCardinalityUri == "dm4.core.many";
+        }
+    });
 
     // ===
 
@@ -152,13 +175,9 @@
     }
 
     DM4._initAssocDefs = function(assocDefs) {
-        for (var i = 0, assocDef; assocDef = assocDefs[i]; i++) {
-            // add convenience properties
-            var assoc = new DM4.Association(assocDef);
-            assocDef.parentTypeUri = assoc.getRole("dm4.core.parent_type").topic_uri;
-            assocDef.childTypeUri  = assoc.getRole("dm4.core.child_type").topic_uri;
-        }
-        return assocDefs;
+        return assocDefs.map(function(assocDef) {
+            return new DM4.AssociationDefinition(assocDef);
+        });
     }
 
     // === Javascript Utilities ===

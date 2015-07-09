@@ -1,7 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="dm4-topic-renderer.html">
 <link rel="import" href="dm4-multi-renderer.html">
-<link rel="import" href="dm4-utils.html">
+<link rel="import" href="dm4-model.html">
 
 <dom-module id="dm4-composite-renderer">
 
@@ -41,12 +41,12 @@
             },
 
             behaviors: [
-                DM4.Utils
+                DM4.TypeCache
             ],
 
             _getAssocDefs: function(topic) {
                 // console.log("_getAssocDefs topic", topic);
-                return topic && this.getTopicType(topic.type_uri).assocDefs;
+                return topic && this.getTopicType(topic.typeUri).assocDefs;
             },
 
             _getChildTopic: function(topic, assocDef, formMode) {
@@ -75,7 +75,7 @@
             _createEmptyTopic: function(typeUri) {
                 return {
                     id: -1,
-                    type_uri: typeUri,
+                    typeUri: typeUri,
                     value: "",
                     childs: {}
                 }

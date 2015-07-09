@@ -1,6 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
-<link rel="import" href="dm4-utils.html">
+<link rel="import" href="dm4-model.html">
 
 <dom-module id="dm4-simple-renderer">
 
@@ -66,7 +66,7 @@
             ],
 
             behaviors: [
-                DM4.Utils
+                DM4.TypeCache
             ],
 
             // ---------------------------------------------------------------------------------------------- Public API
@@ -119,7 +119,7 @@
 
             _getTypeName: function(topic) {
                 // console.log("_getTypeName topic", topic);
-                return topic && this.getTopicType(topic.type_uri).value;
+                return topic && this.getTopicType(topic.typeUri).value;
             }
         });
     </script>

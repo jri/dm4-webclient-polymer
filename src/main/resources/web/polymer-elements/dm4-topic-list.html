@@ -1,5 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="dm4-utils.html">
+<link rel="import" href="dm4-model.html">
 
 <dom-module id="dm4-topic-list">
 
@@ -36,14 +36,14 @@
 
     <template>
         <template is="dom-repeat" items="[[topics]]" as="topic">
-            <div class="group-heading">[[getTopicTypeName(topic)]]</div>
+            <div class="group-heading">[[topic.type.value]]</div>
             <div class="list-item">
                 <div>
-                    <img src="[[getIcon(topic)]]">
+                    <img src="[[topic.iconSrc]]">
                 </div>
                 <div>
                     <a href="">[[topic.value]]</a>
-                    <div class="assoc-type-name">[[getAssocTypeName(topic)]]</div>
+                    <div class="assoc-type-name">[[topic.assoc.type.value]]</div>
                 </div>
             </div>
         </template>
@@ -64,7 +64,7 @@
             },
 
             behaviors: [
-                DM4.Utils
+                DM4.TypeCache
             ]
         });
     </script>

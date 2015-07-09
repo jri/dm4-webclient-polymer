@@ -5,7 +5,7 @@
 <link rel="import" href="dm4-topic-renderer.html">
 <link rel="import" href="dm4-topic-list.html">
 <link rel="import" href="dm4-rest-client.html">
-<link rel="import" href="dm4-utils.html">
+<link rel="import" href="dm4-model.html">
 
 <dom-module id="dm4-detail-panel">
 
@@ -127,6 +127,7 @@
 
                 /**
                  * The topics displayed in the "Related" page.
+                 * `null`/`undefined` if not yet loaded.
                  */
                 relatedTopics: {
                     type: Array
@@ -147,7 +148,7 @@
 
             behaviors: [
                 DM4.RestClient,
-                DM4.Utils
+                DM4.TypeCache
             ],
 
             // ---------------------------------------------------------------------------------------------- Public API
@@ -177,17 +178,17 @@
             // --------------------------------------------------------------------------------------------- Private API
 
             _buildTopicModel: function(topic) {
-                var topicType = this.getTopicType(topic.type_uri);
+                var topicType = this.getTopicType(topic.typeUri);
                 if (topicType.isSimple()) {
                     if (this._isDirty(topic)) {
-                        console.log("new", this.getTopicType(topic.type_uri).value, '"' + topic.value + '" old "' +
+                        console.log("new", this.getTopicType(topic.typeUri).value, '"' + topic.value + '" old "' +
                             topic.oldValue + '" --> dirty');
                         return {
                             id: topic.id,
                             value: topic.value
                         }
                     } else {
-                        console.log("new", this.getTopicType(topic.type_uri).value, '"' + topic.value + '" old "' +
+                        console.log("new", this.getTopicType(topic.typeUri).value, '"' + topic.value + '" old "' +
                             topic.oldValue + '" --> clean');
                     }
                 } else {
@@ -281,7 +282,9 @@
                             // console.log("requesting related topics", topic)
                             this.restc.getRelatedTopics(topic.id, function(response) {
                                 // console.log("-->", request.response.items);
-                                this.relatedTopics = response.items;
+                                this.relatedTopics = response.items.map(function(topic) {
+                                    return new DM4.Topic(topic);
+                                });
                             });
                         }
                     }

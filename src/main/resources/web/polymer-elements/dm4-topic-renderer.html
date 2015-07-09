@@ -1,7 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="dm4-simple-renderer.html">
 <link rel="import" href="dm4-composite-renderer.html">
-<link rel="import" href="dm4-utils.html">
+<link rel="import" href="dm4-model.html">
 
 <dom-module id="dm4-topic-renderer">
 
@@ -37,17 +37,17 @@
             },
 
             behaviors: [
-                DM4.Utils
+                DM4.TypeCache
             ],
 
             _isSimple: function(topic) {
                 // console.log("_isSimple topic", topic);
-                return topic && this.getTopicType(topic.type_uri).isSimple();
+                return topic && this.getTopicType(topic.typeUri).isSimple();
             },
 
             _isComposite: function(topic) {
                 // console.log("_isComposite topic", topic);
-                return topic && this.getTopicType(topic.type_uri).isComposite();
+                return topic && this.getTopicType(topic.typeUri).isComposite();
             }
         });
     </script>

@@ -16,7 +16,7 @@
                         url: "/core/topic/" + topicId,
                         params: {include_childs: true},
                         contentType: "application/json"
-                    }, callback);
+                    }, callback, DM4.Topic);
                 },
 
                 getRelatedTopics: function(topicId, callback) {
@@ -32,7 +32,7 @@
                         url: "/core/topic",
                         contentType: "application/json",
                         body: JSON.stringify({type_uri: topicTypeUri})
-                    }, callback);
+                    }, callback, DM4.Topic);
                 },
 
                 updateTopic: function(topic, callback) {
@@ -81,11 +81,15 @@
 
                 // ----------------------------------------------------------------------------------------- Private API
 
-                _request: function(config, callback) {
+                _request: function(config, callback, constructor) {
                     var promise = self.create("iron-ajax", config).generateRequest().completes;
                     if (callback) {
                         promise.then(function(request) {
-                            callback.bind(self)(request.response);
+                            var response = request.response;
+                            if (constructor) {
+                                response = new constructor(response);
+                            }
+                            callback.bind(self)(response);
                         });
                     } else {
                         return promise;

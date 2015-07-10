@@ -57,10 +57,11 @@
             },
 
             listeners: {
-                "topic-select":    "_selectTopic",
-                "topic-create":    "_createTopic",
-                "topic-edit":      "_updateTopic",
-                "topicmap-select": "_selectTopicmap"
+                "topic-select":         "_selectTopic",
+                "topic-create":         "_createTopic",
+                "topic-edit":           "_updateTopic",
+                "topic-reveal-related": "_revealRelatedTopic",
+                "topicmap-select":      "_selectTopicmap"
             },
 
             behaviors: [
@@ -108,6 +109,20 @@
                 }
             },
 
+            _revealRelatedTopic: function(e) {
+                var relatedTopic = e.detail.relatedTopic;
+                var topic = this.$.detailPanel.topic;
+                // topicmap panel
+                this.$.topicmapPanel.showTopic(relatedTopic, true);   // select=true
+                this.restc.getAssociations(topic.id, relatedTopic.id, relatedTopic.assoc.typeUri, function(assocs) {
+                    assocs.forEach(function(assoc) {
+                        this.$.topicmapPanel.showAssociation(assoc);
+                    }, this);
+                });
+                // detail panel
+                this._getTopicAndShowInDetailPanel(relatedTopic.id);
+            },
+
             _selectTopicmap: function(e) {
                 var topicmapId = e.detail.topicmap.id;
                 this.$.topicmapCache.getTopicmap(topicmapId, function(topicmap) {
@@ -116,7 +131,9 @@
             },
 
             _showTopicmap: function(topicmap) {
+                // topicmap panel
                 this.$.topicmapPanel.showTopicmap(topicmap);
+                // detail panel
                 var topicId = topicmap.selection[0];
                 if (topicId) {
                     this._getTopicAndShowInDetailPanel(topicId);

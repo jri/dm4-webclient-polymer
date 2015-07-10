@@ -10,7 +10,7 @@
             properties: {
 
                 /**
-                 * The topicmaps cache: promises hashed by topicmap ID.
+                 * The topicmaps cache: DM4.Topicmap objects hashed by ID.
                  */
                 topicmaps: {
                     type: Object,
@@ -25,21 +25,17 @@
             // ---------------------------------------------------------------------------------------------- Public API
 
             getTopicmap: function(topicmapId, callback) {
-                var promise = this.topicmaps[topicmapId];
-                if (promise) {
+                var topicmap = this.topicmaps[topicmapId];
+                if (topicmap) {
                     console.log("loading topicmap", topicmapId, "from cache");
+                    callback(topicmap);
                 } else {
                     console.log("loading topicmap", topicmapId, "from server");
-                    // Note: we don't pass the callback to the RestClient as we are insterested in the promise.
-                    // As a result the callback is not bound to anything. Binding is up to the topicmap cache user.
-                    promise = this.restc.getTopicmap(topicmapId);
-                    this.topicmaps[topicmapId] = promise;
+                    promise = this.restc.getTopicmap(topicmapId, function(topicmap) {
+                        this.topicmaps[topicmapId] = topicmap;
+                        callback(topicmap);
+                    });
                 }
-                promise.then(function(request) {
-                    var topicmap = request.response;
-                    topicmap.selection = topicmap.selection || [];  // init selection state
-                    callback(topicmap);
-                });
             }
         });
     </script>

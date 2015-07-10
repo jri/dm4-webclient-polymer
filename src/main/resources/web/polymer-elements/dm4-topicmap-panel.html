@@ -75,20 +75,36 @@
             // ---------------------------------------------------------------------------------------------- Public API
 
             showTopic: function(topic, select) {
-                // TODO: if already in topicmap just set visibility
-                topic.view_props = {
-                    "dm4.topicmaps.x": Math.floor(this.size.width  * Math.random() - this.translation.x),
-                    "dm4.topicmaps.y": Math.floor(this.size.height * Math.random() - this.translation.y),
-                    "dm4.topicmaps.visibility": true
-                };
-                // console.log("showTopic", topic);
-                this.push("topicmap.topics", topic);
+                var t = this.topicmap.getTopic(topic.id);
+                if (t) {
+                    // TODO: manage visibility
+                } else {
+                    // update model
+                    topic.view_props = {
+                        "dm4.topicmaps.x": Math.floor(this.size.width  * Math.random() - this.translation.x),
+                        "dm4.topicmaps.y": Math.floor(this.size.height * Math.random() - this.translation.y),
+                        "dm4.topicmaps.visibility": true
+                    };
+                    this.push("topicmap.topics", topic);
+                    // update DB
+                    this.restc.addTopicToTopicmap(this.topicmap.info.id, topic.id, topic.view_props);
+                }
                 //
                 if (select) {
                     this.setSelectedTopic(topic.id);
                 }
-                // update DB
-                this.restc.addTopicToTopicmap(this.topicmap.info.id, topic.id, topic.view_props);
+            },
+
+            showAssociation: function(assoc) {
+                var a = this.topicmap.getAssociation(assoc.id);
+                if (a) {
+                    // TODO: manage visibility
+                } else {
+                    // update model
+                    this.push("topicmap.assocs", assoc);
+                    // update DB
+                    this.restc.addAssociationToTopicmap(this.topicmap.info.id, assoc.id);
+                }
             },
 
             setSelectedTopic: function(topicId) {

@@ -44,6 +44,24 @@
                     }, callback);
                 },
 
+                // === Associations ===
+
+                /**
+                 * Returns the associations between two topics. If no such association exists an empty array is returned.
+                 *
+                 * @param   assoc_type_uri
+                 *              Association type filter (optional).
+                 *              If not specified (that is any falsish value) no filter is applied.
+                 *
+                 * @return  An array of associations.
+                 */
+                getAssociations: function(topicId1, topicId2, assocTypeUri, callback) {
+                    return this._request({
+                        url: "/core/association/multiple/" + topicId1 + "/" + topicId2 + "/" + (assocTypeUri || ""),
+                        contentType: "application/json"
+                    }, callback);
+                },
+
                 // === Topicmaps ===
 
                 getTopicmap: function(topicmapId, callback) {
@@ -51,7 +69,7 @@
                         url: "/topicmap/" + topicmapId,
                         contentType: "application/json",
                         headers: {Accept: "application/json"}
-                    }, callback);
+                    }, callback, DM4.Topicmap);
                 },
 
                 addTopicToTopicmap: function(topicmapId, topicId, viewProps, callback) {
@@ -60,6 +78,14 @@
                         url: "/topicmap/" + topicmapId + "/topic/" + topicId,
                         contentType: "application/json",
                         body: JSON.stringify(viewProps)
+                    }, callback);
+                },
+
+                addAssociationToTopicmap: function(topicmapId, assocId, callback) {
+                    return this._request({
+                        method: "POST",
+                        url: "/topicmap/" + topicmapId + "/association/" + assocId,
+                        contentType: "application/json"
                     }, callback);
                 },
 

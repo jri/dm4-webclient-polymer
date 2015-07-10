@@ -63,6 +63,13 @@
         this.customAssocTypeUri   = assocDef.custom_assoc_type_uri;
     }
 
+    DM4.Topicmap = function(topicmap) {
+        this.info      = topicmap.info;
+        this.topics    = topicmap.topics;
+        this.assocs    = topicmap.assocs;
+        this.selection = [];
+    }
+
     // === Prototypes ===
 
     DM4.Topic.prototype = {
@@ -125,6 +132,33 @@
             return this.childCardinalityUri == "dm4.core.many";
         }
     });
+
+    DM4.Topicmap.prototype = {
+
+        getTopic: function(id) {
+            for (var i = 0, topic; topic = this.topics[i]; i++) {
+                if (topic.id == id) {
+                    return topic;
+                }
+            }
+        },
+
+        getAssociation: function(id) {
+            for (var i = 0, assoc; assoc = this.assocs[i]; i++) {
+                if (assoc.id == id) {
+                    return assoc;
+                }
+            }
+        },
+
+        getTopicPos: function(id) {
+            var viewProps = this.getTopic(id).view_props;
+            return {
+                x: viewProps["dm4.topicmaps.x"],
+                y: viewProps["dm4.topicmaps.y"]
+            }
+        }
+    }
 
     // ===
 

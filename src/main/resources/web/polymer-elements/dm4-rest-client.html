@@ -47,13 +47,14 @@
                 // === Associations ===
 
                 /**
-                 * Returns the associations between two topics. If no such association exists an empty array is returned.
+                 * Returns the associations between two topics. ### FIXDOC
+                 * If no such association exists an empty array is returned.
                  *
                  * @param   assoc_type_uri
                  *              Association type filter (optional).
                  *              If not specified (that is any falsish value) no filter is applied.
                  *
-                 * @return  An array of associations.
+                 * @return  An array of associations. ### FIXDOC
                  */
                 getAssociations: function(topicId1, topicId2, assocTypeUri, callback) {
                     return this._request({

@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="dm4-rest-client.html">
 
+<!-- TODO: offer this as a mixin? The host (Webclient) would be freed to bind its callback -->
 <dom-module id="dm4-topicmap-cache">
 
     <script>
@@ -31,7 +32,7 @@
                     callback(topicmap);
                 } else {
                     console.log("loading topicmap", topicmapId, "from server");
-                    promise = this.restc.getTopicmap(topicmapId, function(topicmap) {
+                    this.restc.getTopicmap(topicmapId, function(topicmap) {
                         this.topicmaps[topicmapId] = topicmap;
                         callback(topicmap);
                     });

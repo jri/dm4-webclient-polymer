@@ -127,7 +127,7 @@
                 var topicmapId = e.detail.topicmap.id;
                 this.$.topicmapCache.getTopicmap(topicmapId, function(topicmap) {
                     this._showTopicmap(topicmap);
-                }.bind(this));
+                }.bind(this));  // Note: we must bind here as the RestClient doesn't know about the Webclient
             },
 
             _showTopicmap: function(topicmap) {

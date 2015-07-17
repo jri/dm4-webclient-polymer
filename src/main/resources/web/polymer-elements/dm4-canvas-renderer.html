@@ -72,6 +72,10 @@
                 }
             },
 
+            observers: [
+                "_assocsChanged(topicmap.assocs.*)"
+            ],
+
             listeners: {
                 "topic-moving": "_drawCanvas",
                 "track": "_trackCanvas"
@@ -84,7 +88,12 @@
             // --------------------------------------------------------------------------------------------- Private API
 
             _topicmapChanged: function(topicmap) {
-                // console.log("_topicmapChanged: setting up canvas translation", this._translation);
+                console.log("_topicmapChanged");
+                this._drawCanvas();
+            },
+
+            _assocsChanged: function(assocs) {
+                console.log("_assocsChanged");
                 this._drawCanvas();
             },
 

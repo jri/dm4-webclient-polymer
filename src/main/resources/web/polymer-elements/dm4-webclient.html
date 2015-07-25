@@ -20,7 +20,8 @@
         div {
             display: flex;
             flex: auto;
-        }
+            min-height: 0;  /* Chrome 44 workaround for overflow inside nested flex columns */
+        }                   /* http://code.google.com/p/chromium/issues/detail?id=506893    */
     </style>
 
     <template>

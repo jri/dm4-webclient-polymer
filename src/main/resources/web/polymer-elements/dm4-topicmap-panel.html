@@ -75,19 +75,30 @@
             // ---------------------------------------------------------------------------------------------- Public API
 
             showTopic: function(topic, select) {
-                var t = this.topicmap.getTopic(topic.id);
-                if (t) {
-                    // TODO: manage visibility
+                var i = this.topicmap.getTopicIndex(topic.id);
+                if (i != -1) {
+                    var viewTopic = this.topicmap.topics[i];
+                    if (viewTopic.visibility) {
+                        console.log("topic", topic.id, "already visible");
+                    } else {
+                        console.log("topic", topic.id, "set visibility true");
+                        // update model
+                        this.set(["topicmap.topics", i, "visibility"], true);
+                        // update DB
+                        this.restc.setTopicVisibility(this.topicmap.info.id, viewTopic.id, true);
+                    }
                 } else {
+                    console.log("topic", topic.id, "add to topicmap");
                     // update model
-                    topic.view_props = {
+                    var viewTopic = new DM4.ViewTopic(topic);
+                    viewTopic.viewProps = {
                         "dm4.topicmaps.x": Math.floor(this.size.width  * Math.random() - this.translation.x),
                         "dm4.topicmaps.y": Math.floor(this.size.height * Math.random() - this.translation.y),
                         "dm4.topicmaps.visibility": true
                     };
-                    this.push("topicmap.topics", topic);
+                    this.push("topicmap.topics", viewTopic);
                     // update DB
-                    this.restc.addTopicToTopicmap(this.topicmap.info.id, topic.id, topic.view_props);
+                    this.restc.addTopicToTopicmap(this.topicmap.info.id, viewTopic.id, viewTopic.viewProps);
                 }
                 //
                 if (select) {
@@ -127,9 +138,9 @@
             // === Event Handler ===
 
             _storeTopicPosition: function(e) {
-                // console.log("_storeTopicPosition");
                 var topic = e.detail.topic;
-                var viewProps = topic.view_props;
+                var viewProps = topic.viewProps;
+                // console.log("_storeTopicPosition", topic);
                 this.restc.setTopicPosition(this.topicmap.info.id, topic.id, viewProps["dm4.topicmaps.x"],
                                                                              viewProps["dm4.topicmaps.y"]);
             },

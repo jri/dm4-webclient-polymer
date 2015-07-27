@@ -19,7 +19,7 @@
     </style>
 
     <template>
-        <div class="topic" style$="{{_getStyle(topic.view_props)}}"
+        <div class="topic" style$="{{_getStyle(topic.viewProps)}}"
             selected$="{{_getSelected(topic, selection)}}">{{topic.value}}</div>
     </template>
 
@@ -52,6 +52,7 @@
 
             // --- Local DOM ---
 
+            // ### TODO
             _getStyle: function(viewProps) {
                 return "left: " + this._getX(viewProps) + "px; top: " + this._getY(viewProps) + "px; " +
                     "background-color: hsl(210,100%,90%);";
@@ -104,16 +105,16 @@
                     //
                     // For notification to work a new view-props object must be created
                     var changedViewProps = {
-                        "dm4.topicmaps.x": this.topic.view_props["dm4.topicmaps.x"] + e.detail.ddx,
-                        "dm4.topicmaps.y": this.topic.view_props["dm4.topicmaps.y"] + e.detail.ddy
+                        "dm4.topicmaps.x": this.topic.viewProps["dm4.topicmaps.x"] + e.detail.ddx,
+                        "dm4.topicmaps.y": this.topic.viewProps["dm4.topicmaps.y"] + e.detail.ddy
                     }
                     // We don't want remove the additional view-props, so we don't use set().
-                    // e.model.set("topic.view_props", changedViewProps);
+                    // e.model.set("topic.viewProps", changedViewProps);
                     //
                     // Instead we update the topic manually and then call notifyPath().
-                    this.topic.view_props["dm4.topicmaps.x"] = changedViewProps["dm4.topicmaps.x"];
-                    this.topic.view_props["dm4.topicmaps.y"] = changedViewProps["dm4.topicmaps.y"];
-                    this.notifyPath("topic.view_props", changedViewProps);
+                    this.topic.viewProps["dm4.topicmaps.x"] = changedViewProps["dm4.topicmaps.x"];
+                    this.topic.viewProps["dm4.topicmaps.y"] = changedViewProps["dm4.topicmaps.y"];
+                    this.notifyPath("topic.viewProps", changedViewProps);
                     //
                     this.fire("topic-moving", {topic: this.topic});
                     break;

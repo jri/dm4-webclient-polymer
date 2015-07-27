@@ -98,6 +98,14 @@
                     }, callback);
                 },
 
+                setTopicVisibility: function(topicmapId, topicId, visibility, callback) {
+                    return this._request({
+                        method: "PUT",
+                        url: "/topicmap/" + topicmapId + "/topic/" + topicId + "/" + visibility,
+                        contentType: "application/json"
+                    }, callback);
+                },
+
                 setTopicmapTranslation: function(topicmapId, x, y, callback) {
                     return this._request({
                         method: "PUT",

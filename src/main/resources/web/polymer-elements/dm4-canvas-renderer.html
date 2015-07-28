@@ -26,9 +26,6 @@
         Polymer({
             is: "dm4-canvas-renderer",
 
-            ASSOC_WIDTH: 4,
-            DEFAULT_ASSOC_COLOR: "#b2b2b2",
-
             properties: {
 
                 /**
@@ -156,9 +153,9 @@
 
             _drawAssociations: function() {
                 for (var i = 0, assoc; assoc = this.topicmap.assocs[i]; i++) {
-                    var p1 = this.topicmap.getTopic(assoc.role_1.topic_id).pos;
-                    var p2 = this.topicmap.getTopic(assoc.role_2.topic_id).pos;
-                    this._drawLine(p1.x, p1.y, p2.x, p2.y, this.ASSOC_WIDTH, this.DEFAULT_ASSOC_COLOR);
+                    var p1 = this.topicmap.getTopic(assoc.role1.topic_id).pos;
+                    var p2 = this.topicmap.getTopic(assoc.role2.topic_id).pos;
+                    this._drawLine(p1.x, p1.y, p2.x, p2.y, DM4.DEFAULT_ASSOC_WIDTH, assoc.color);
                 }
             },
 

@@ -6,7 +6,9 @@
 
     // === Config ===
 
-    DM4.DEFAULT_TOPIC_ICON = "/de.deepamehta.webclient/images/ball-gray.png";
+    DM4.DEFAULT_TOPIC_ICON  = "/de.deepamehta.webclient/images/ball-gray.png";
+    DM4.DEFAULT_ASSOC_WIDTH = 4;
+    DM4.DEFAULT_ASSOC_COLOR = "#b2b2b2";
 
     // === Constructors ===
 
@@ -40,7 +42,7 @@
         if (type) {
             this.dataTypeUri      = type.data_type_uri;
             this.indexModeUris    = type.index_mode_uris;
-            this.assocDefs        = DM4._initAssocDefs(type.assoc_defs);
+            this.assocDefs        = DM4.instantiate(type.assoc_defs, DM4.AssociationDefinition);
             this.labelConfig      = type.label_config;
             this.viewConfigTopics = DM4.hashByType(type.view_config_topics);
         }
@@ -65,8 +67,8 @@
 
     DM4.Topicmap = function(topicmap) {
         this.info      = topicmap.info;
-        this.topics    = DM4.buildViewTopics(topicmap.topics);
-        this.assocs    = topicmap.assocs;
+        this.topics    = DM4.instantiate(topicmap.topics, DM4.ViewTopic);
+        this.assocs    = DM4.instantiate(topicmap.assocs, DM4.ViewAssociation);
         this.selection = [];
     }
 
@@ -75,16 +77,23 @@
         this.viewProps = topic.view_props;
     }
 
+    DM4.ViewAssociation = function(assoc) {
+        DM4.Association.call(this, assoc);
+        // Note: associations have no view properties.
+        // This class merely serves orthogonality.
+    }
+
     // === Prototypes ===
 
     DM4.Topic.prototype = {
 
-        get iconSrc() {
-            return this.type.getViewConfig("dm4.webclient.view_config", "dm4.webclient.icon") || DM4.DEFAULT_TOPIC_ICON;
-        },
-
         get type() {
             return DM4.TypeCache.getTopicType(this.typeUri);
+        },
+
+        get iconSrc() {
+            return this.type.getViewConfig("dm4.webclient.view_config", "dm4.webclient.icon")
+                || DM4.DEFAULT_TOPIC_ICON;
         }
     }
 
@@ -92,6 +101,11 @@
 
         get type() {
             return DM4.TypeCache.getAssocType(this.typeUri);
+        },
+
+        get color() {
+            return this.type.getViewConfig("dm4.webclient.view_config", "dm4.webclient.color")
+                || DM4.DEFAULT_ASSOC_COLOR;
         },
 
         getRole: function(roleTypeUri) {
@@ -189,6 +203,8 @@
         }
     });
 
+    DM4.ViewAssociation.prototype = new DM4.Association();
+
     // ===
 
     DM4.TypeCache = {
@@ -229,12 +245,6 @@
         return childTopics;
     }
 
-    DM4.buildViewTopics = function(topics) {
-        return topics.map(function(topic) {
-            return new DM4.ViewTopic(topic);
-        });
-    }
-
     DM4.hashByType = function(topics) {
         var hashedTopics = {};
         for (var i = 0, topic; topic = topics[i]; i++) {
@@ -243,13 +253,13 @@
         return hashedTopics;
     }
 
-    DM4._initAssocDefs = function(assocDefs) {
-        return assocDefs.map(function(assocDef) {
-            return new DM4.AssociationDefinition(assocDef);
+    // === Javascript Utilities ===
+
+    DM4.instantiate = function(items, constructor) {
+        return items.map(function(item) {
+            return new constructor(item);
         });
     }
-
-    // === Javascript Utilities ===
 
     /**
      * Returns true if the array contains the object.

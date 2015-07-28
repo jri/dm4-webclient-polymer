@@ -174,6 +174,10 @@
                 x: this.viewProps["dm4.topicmaps.x"],
                 y: this.viewProps["dm4.topicmaps.y"]
             }
+        },
+        set: function(pos) {
+            this.viewProps["dm4.topicmaps.x"] = pos.x;
+            this.viewProps["dm4.topicmaps.y"] = pos.y;
         }
     });
     Object.defineProperty(DM4.ViewTopic.prototype, "visibility", {

@@ -85,7 +85,7 @@
                         // update model
                         this.set(["topicmap.topics", i, "visibility"], true);
                         // update DB
-                        this.restc.setTopicVisibility(this.topicmap.info.id, viewTopic.id, true);
+                        this.restc.setTopicVisibility(this.topicmap.info.id, topic.id, true);
                     }
                 } else {
                     console.log("topic", topic.id, "add to topicmap");
@@ -98,7 +98,7 @@
                     };
                     this.push("topicmap.topics", viewTopic);
                     // update DB
-                    this.restc.addTopicToTopicmap(this.topicmap.info.id, viewTopic.id, viewTopic.viewProps);
+                    this.restc.addTopicToTopicmap(this.topicmap.info.id, topic.id, viewTopic.viewProps);
                 }
                 //
                 if (select) {
@@ -109,10 +109,11 @@
             showAssociation: function(assoc) {
                 var a = this.topicmap.getAssociation(assoc.id);
                 if (a) {
-                    // TODO: manage visibility
+                    console.log("assoc", assoc.id, "already visible");
                 } else {
+                    console.log("assoc", assoc.id, "add to topicmap");
                     // update model
-                    this.push("topicmap.assocs", assoc);
+                    this.push("topicmap.assocs", new DM4.ViewAssociation(assoc));
                     // update DB
                     this.restc.addAssociationToTopicmap(this.topicmap.info.id, assoc.id);
                 }

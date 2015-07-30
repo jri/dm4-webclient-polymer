@@ -16,7 +16,10 @@
         if (object) {
             this.id      = object.id;
             this.uri     = object.uri;
-            this.typeUri = object.type_uri;
+            // Note: the type URI is stored in different properties depending on wether the object is received from
+            // server ("type_uri") or constructed at client-side ("typeUri"), e.g. when constructing a DM4.ViewTopic
+            // upon a DM4.Topic. At client-side we don't want the underscore notation as used at server-side.
+            this.typeUri = object[object instanceof DM4.Object ? "typeUri" : "type_uri"];
             this.value   = object.value;
             this.childs  = DM4.buildChildTopics(object.childs);
         }
@@ -85,38 +88,39 @@
 
     // === Prototypes ===
 
-    DM4.Topic.prototype = {
-
-        get type() {
+    DM4.Topic.prototype = new DM4.Object();
+    Object.defineProperty(DM4.Topic.prototype, "type", {
+        get: function() {
             return DM4.TypeCache.getTopicType(this.typeUri);
-        },
-
-        get iconSrc() {
+        }
+    });
+    Object.defineProperty(DM4.Topic.prototype, "iconSrc", {
+        get: function() {
             return this.type.getViewConfig("dm4.webclient.view_config", "dm4.webclient.icon")
                 || DM4.DEFAULT_TOPIC_ICON;
         }
-    }
+    });
 
-    DM4.Association.prototype = {
-
-        get type() {
+    DM4.Association.prototype = new DM4.Object();
+    Object.defineProperty(DM4.Association.prototype, "type", {
+        get: function() {
             return DM4.TypeCache.getAssocType(this.typeUri);
-        },
-
-        get color() {
+        }
+    });
+    Object.defineProperty(DM4.Association.prototype, "color", {
+        get: function() {
             return this.type.getViewConfig("dm4.webclient.view_config", "dm4.webclient.color")
                 || DM4.DEFAULT_ASSOC_COLOR;
-        },
-
-        getRole: function(roleTypeUri) {
-            var match1 = this.role1.role_type_uri == roleTypeUri;
-            var match2 = this.role2.role_type_uri == roleTypeUri;
-            if (match1 && match2) {
-                throw "AssociationError: ambiguity in association " + this.id +
-                    " when looking for the \"" + roleTypeUri + "\" role";
-            }
-            return match1 ? this.role1 : match2 ? this.role2 : undefined;
         }
+    });
+    DM4.Association.prototype.getRole = function(roleTypeUri) {
+        var match1 = this.role1.role_type_uri == roleTypeUri;
+        var match2 = this.role2.role_type_uri == roleTypeUri;
+        if (match1 && match2) {
+            throw "AssociationError: ambiguity in association " + this.id +
+                " when looking for the \"" + roleTypeUri + "\" role";
+        }
+        return match1 ? this.role1 : match2 ? this.role2 : undefined;
     }
 
     DM4.Type.prototype = {

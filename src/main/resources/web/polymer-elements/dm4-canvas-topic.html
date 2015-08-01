@@ -4,7 +4,7 @@
 <dom-module id="dm4-canvas-topic">
 
     <style>
-        .topic {
+        :host {
             position: absolute;
             padding: 2px 12px 2px 4px;
             min-width:  18px;   /* draggable handle for empty topics */
@@ -15,7 +15,7 @@
             -ms-user-select: none;
         }
 
-        .topic[selected] {
+        :host[selected] {
             box-shadow: 0 0 1em blue;
         }
 
@@ -28,10 +28,8 @@
     </style>
 
     <template>
-        <div id="topic" class="topic" style$="[[_getStyle(topic.pos, size)]]" selected$="[[_getSelected(topic, selection)]]">
-            <div>[[topic.value]]</div>
-            <img src="[[topic.iconSrc]]">
-        </div>
+        <div>[[topic.value]]</div>
+        <img src="[[topic.iconSrc]]">
     </template>
 
     <script>
@@ -41,7 +39,7 @@
             properties: {
 
                 /**
-                 * The rendered topic.
+                 * The rendered topic (DM4.ViewTopic).
                  */
                 topic: {
                     type: Object
@@ -54,10 +52,27 @@
                     type: Array
                 },
 
-                size: {
+                /**
+                 * If true the topic is rendered as selected.
+                 */
+                selected: {
+                    type: Boolean,
+                    computed: "_getSelected(topic, selection)",
+                    reflectToAttribute: true
+                },
+
+                /**
+                 * The size of the topic DOM in pixel.
+                 * An object with `width` and `height` properties.
+                 */
+                _size: {
                     type: Object
                 }
             },
+
+            observers: [
+                "_setStyle(topic.pos, _size)"
+            ],
 
             behaviors: [
                 Polymer.IronResizableBehavior
@@ -72,11 +87,11 @@
 
             // --- Local DOM ---
 
-            _getStyle: function(pos, size) {
-                console.log("_getStyle", pos, size);
-                return "left: " + (pos.x - size.width  / 2) + "px; " +
-                       "top: "  + (pos.y - size.height / 2) + "px; " +
-                       "background-color: hsl(210,100%,90%);";
+            _setStyle: function(pos, size) {
+                // console.log("_setStyle", pos, size);
+                this.style.left = (pos.x - size.width  / 2) + "px";
+                this.style.top  = (pos.y - size.height / 2) + "px";
+                this.style["background-color"] = "hsl(210,100%,90%)";
             },
 
             _getSelected: function(topic, selection) {
@@ -124,11 +139,11 @@
             },
 
             _topicResized: function(e) {
-                this.size = {
-                    width:  this.$.topic.clientWidth,
-                    height: this.$.topic.clientHeight
+                this._size = {
+                    width:  this.clientWidth,
+                    height: this.clientHeight
                 }
-                console.log("_topicResized", this.size, e);
+                // console.log("_topicResized", this._size, e);
             }
         });
     </script>

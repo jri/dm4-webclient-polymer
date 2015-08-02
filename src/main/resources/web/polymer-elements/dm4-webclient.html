@@ -72,6 +72,8 @@
 
             // --------------------------------------------------------------------------------------------- Private API
 
+
+
             // === Event Handler ===
 
             _selectTopic: function(e) {
@@ -81,7 +83,7 @@
             },
 
             _deselectTopic: function(e) {
-                var topicId = e.detail.topic.id;
+                var topicId = e.detail.topicId;
                 if (this.$.detailPanel.topic.id == topicId) {
                     this.$.detailPanel.clear();
                 }
@@ -157,6 +159,8 @@
                     this.$.detailPanel.showTopic(topic);
                 });
             },
+
+
 
             // === Requests ===
 

@@ -46,9 +46,11 @@
 
                 /**
                  * The current size of this topicmap panel.
+                 * An object with `width` and `height` properties.
                  */
                 size: {
-                    type: Object
+                    type: Object,
+                    readOnly: true
                 },
 
                 /**
@@ -66,6 +68,7 @@
             ],
 
             listeners: {
+                "tap":           "_clearSelection", 
                 "topic-move":    "_storeTopicPosition",
                 "topicmap-move": "_storeTopicmapPosition",
                 "topic-context": "_showTopicContextMenu",
@@ -82,10 +85,8 @@
                         console.log("topic", topic.id, "already visible");
                     } else {
                         console.log("topic", topic.id, "set visibility true");
-                        // update model
-                        this.set(["topicmap.topics", i, "visibility"], true);
-                        // update DB
-                        this.restc.setTopicVisibility(this.topicmap.info.id, topic.id, true);
+                        this.set(["topicmap.topics", i, "visibility"], true);                   // update model
+                        this.restc.setTopicVisibility(this.topicmap.info.id, topic.id, true);   // update DB
                     }
                 } else {
                     console.log("topic", topic.id, "add to topicmap");
@@ -117,15 +118,32 @@
                 }
             },
 
-            setSelectedTopic: function(topicId) {
-                this.set("topicmap.selection", [topicId]);
-            },
-
             showTopicmap: function(topicmap) {
                 this.topicmap = topicmap;
             },
 
+            // --- Selection ---
+
+            setSelectedTopic: function(topicId) {
+                this.set("topicmap.selection", [topicId]);
+            },
+
+            _removeTopicFromSelection: function(topicId) {
+                if (this.arrayDelete("topicmap.selection", topicId)) {
+                    this.fire("topic-deselect", {topicId: topicId});
+                }
+            },
+
+            _clearSelection: function() {
+                // console.log("_clearSelection");
+                this.topicmap.selection.forEach(function(topicId) {
+                    this._removeTopicFromSelection(topicId);
+                }, this);
+            },
+
             // --------------------------------------------------------------------------------------------- Private API
+
+
 
             // === Observer ===
 
@@ -133,6 +151,8 @@
                 this.translation = this._getTranslation(topicmap);
                 // console.log("_topicmapChanged: setting up canvas translation", this._translation);
             },
+
+
 
             // === Event Handler ===
 
@@ -160,11 +180,13 @@
             },
 
             _panelResized: function(e) {
-                this.size = {
+                this._setSize({
                     width:  this.clientWidth,
                     height: this.clientHeight
-                }
+                });
             },
+
+
 
             // === Command Handler ===
 
@@ -177,12 +199,15 @@
                 }, this);
                 // hide topic
                 this._setTopicVisibility(topic, false);                                         // update model
+                this._removeTopicFromSelection(topic.id);                                       // update model
                 this.restc.setTopicVisibility(this.topicmap.info.id, topic.id, false);          // update DB
             },
 
             _deleteTopic: function(topic) {
                 console.log("deleting topic", topic.id);
             },
+
+
 
             // === Modell Access ===
 

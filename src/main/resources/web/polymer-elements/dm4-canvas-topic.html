@@ -72,8 +72,7 @@
             },
 
             observers: [
-                "_setStyle(topic.pos, size)",
-                "_visibilityChanged(topic.visibility)"
+                "_setStyle(topic.pos, size)"
             ],
 
             behaviors: [
@@ -87,7 +86,11 @@
                 "iron-resize": "_topicResized"
             },
 
-            // --- Local DOM ---
+            // --------------------------------------------------------------------------------------------- Private API
+
+
+
+            // === Local DOM ===
 
             _setStyle: function(pos, size) {
                 // console.log("_setStyle", pos, size);
@@ -96,24 +99,19 @@
                 this.style["background-color"] = "hsl(210,100%,90%)";
             },
 
-            _visibilityChanged: function(visibility) {
-                if (!visibility && DM4.contains(this.selection, this.topic.id)) {
-                    this.arrayDelete("selection", this.topic.id);
-                    console.log("_visibilityChanged", this.topic.id, visibility, "--> selection", this.selection);
-                    this.fire("topic-deselect", {topic: this.topic});
-                }
-            },
-
             _getSelected: function(topic, selection) {
                 // console.log("_getSelected", selection.base, topic.id);
                 return DM4.contains(selection.base, topic.id);
             },
 
-            // -- Event Handling --
 
-            _selectTopic: function() {
+
+            // === Event Handling ===
+
+            _selectTopic: function(e) {
                 // console.log("topic clicked");
                 this.fire("topic-select", {topic: this.topic});
+                e.stopPropagation();    // prevent topicmap panel from clearing the selection
             },
 
             _contextmenu: function(e) {

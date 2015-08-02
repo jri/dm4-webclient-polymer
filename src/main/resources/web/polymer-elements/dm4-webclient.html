@@ -59,6 +59,7 @@
 
             listeners: {
                 "topic-select":         "_selectTopic",
+                "topic-deselect":       "_deselectTopic",
                 "topic-create":         "_createTopic",
                 "topic-edit":           "_updateTopic",
                 "topic-reveal-related": "_revealRelatedTopic",
@@ -77,6 +78,13 @@
                 var topicId = e.detail.topic.id;
                 this.$.topicmapPanel.setSelectedTopic(topicId);
                 this._getTopicAndShowInDetailPanel(topicId);
+            },
+
+            _deselectTopic: function(e) {
+                var topicId = e.detail.topic.id;
+                if (this.$.detailPanel.topic.id == topicId) {
+                    this.$.detailPanel.clear();
+                }
             },
 
             _createTopic: function(e) {

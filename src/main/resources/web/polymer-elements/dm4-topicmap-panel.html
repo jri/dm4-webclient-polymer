@@ -169,7 +169,7 @@
             // === Command Handler ===
 
             _hideTopic: function(topic) {
-                console.log("hiding topic", topic, this);
+                console.log("hiding topic", topic.id);
                 // remove assocs
                 this.topicmap.getTopicAssociations(topic.id).forEach(function(assoc) {
                     this._removeAssociationFromTopicmap(assoc);                                 // update model
@@ -180,8 +180,8 @@
                 this.restc.setTopicVisibility(this.topicmap.info.id, topic.id, false);          // update DB
             },
 
-            _deleteTopic: function(topicId) {
-                console.log("deleting topic", topicId);
+            _deleteTopic: function(topic) {
+                console.log("deleting topic", topic.id);
             },
 
             // === Modell Access ===
@@ -209,7 +209,7 @@
 
             _removeAssociationFromTopicmap: function(assoc) {
                 var removed = this.arrayDelete("topicmap.assocs", assoc);
-                console.log("_removeAssociationFromTopicmap", removed);
+                // console.log("_removeAssociationFromTopicmap", removed);
             }
         });
     </script>

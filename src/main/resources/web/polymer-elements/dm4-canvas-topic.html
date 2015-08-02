@@ -57,7 +57,7 @@
                  */
                 selected: {
                     type: Boolean,
-                    computed: "_getSelected(topic, selection)",
+                    computed: "_getSelected(topic, selection.*)",
                     reflectToAttribute: true
                 },
 
@@ -65,13 +65,15 @@
                  * The size of the topic DOM in pixel.
                  * An object with `width` and `height` properties.
                  */
-                _size: {
-                    type: Object
+                size: {
+                    type: Object,
+                    readOnly: true
                 }
             },
 
             observers: [
-                "_setStyle(topic.pos, _size)"
+                "_setStyle(topic.pos, size)",
+                "_visibilityChanged(topic.visibility)"
             ],
 
             behaviors: [
@@ -94,9 +96,17 @@
                 this.style["background-color"] = "hsl(210,100%,90%)";
             },
 
+            _visibilityChanged: function(visibility) {
+                if (!visibility && DM4.contains(this.selection, this.topic.id)) {
+                    this.arrayDelete("selection", this.topic.id);
+                    console.log("_visibilityChanged", this.topic.id, visibility, "--> selection", this.selection);
+                    this.fire("topic-deselect", {topic: this.topic});
+                }
+            },
+
             _getSelected: function(topic, selection) {
-                // console.log("_getSelected", selection, topic.id);
-                return DM4.contains(selection, topic.id);
+                // console.log("_getSelected", selection.base, topic.id);
+                return DM4.contains(selection.base, topic.id);
             },
 
             // -- Event Handling --
@@ -139,11 +149,11 @@
             },
 
             _topicResized: function(e) {
-                this._size = {
+                this._setSize({
                     width:  this.clientWidth,
                     height: this.clientHeight
-                }
-                // console.log("_topicResized", this._size, e);
+                });
+                // console.log("_topicResized", this.size, e);
             }
         });
     </script>

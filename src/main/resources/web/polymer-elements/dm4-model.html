@@ -4,11 +4,15 @@
 
     DM4 = {};
 
+
+
     // === Config ===
 
     DM4.DEFAULT_TOPIC_ICON  = "/de.deepamehta.webclient/images/ball-gray.png";
     DM4.DEFAULT_ASSOC_WIDTH = 4;
     DM4.DEFAULT_ASSOC_COLOR = "#b2b2b2";
+
+
 
     // === Constructors ===
 
@@ -77,7 +81,7 @@
 
     DM4.ViewTopic = function(topic) {
         DM4.Topic.call(this, topic);
-        this.viewProps = topic.view_props;
+        this.viewProps = topic.view_props || {};
     }
 
     DM4.ViewAssociation = function(assoc) {
@@ -85,6 +89,8 @@
         // Note: associations have no view properties.
         // This class merely serves orthogonality.
     }
+
+
 
     // === Prototypes ===
 
@@ -161,6 +167,28 @@
 
     DM4.Topicmap.prototype = {
 
+        get id() {
+            return this.info.id;
+        },
+
+        // ---
+
+        get translation() {
+            var _translation = this.info.childs["dm4.topicmaps.state"].childs["dm4.topicmaps.translation"];
+            return {
+                x: _translation.childs["dm4.topicmaps.translation_x"].value,
+                y: _translation.childs["dm4.topicmaps.translation_y"].value
+            }
+        },
+
+        set translation(translation) {
+            var _translation = this.info.childs["dm4.topicmaps.state"].childs["dm4.topicmaps.translation"];
+            _translation.childs["dm4.topicmaps.translation_x"].value = translation.x;
+            _translation.childs["dm4.topicmaps.translation_y"].value = translation.y;
+        },
+
+        // ---
+
         getTopicIndex: function(topicId) {
             for (var i = 0, topic; topic = this.topics[i]; i++) {
                 if (topic.id == topicId) {
@@ -228,6 +256,8 @@
 
     DM4.ViewAssociation.prototype = new DM4.Association();
 
+
+
     // ===
 
     DM4.TypeCache = {
@@ -248,6 +278,8 @@
             return new Polymer.IronMeta().byKey("dm4").assocTypes;
         }
     }
+
+
 
     // === DM Utilities ===
 
@@ -275,6 +307,8 @@
         }
         return hashedTopics;
     }
+
+
 
     // === Javascript Utilities ===
 

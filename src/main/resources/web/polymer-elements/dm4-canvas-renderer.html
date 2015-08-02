@@ -13,7 +13,7 @@
 
     <template>
         <canvas width="[[size.width]]" height="[[size.height]]"></canvas>
-        <div style$="[[_getTopicLayerStyle(translation)]]">
+        <div style$="[[_getTopicLayerStyle(topicmap.translation)]]">
             <template is="dom-repeat" items="[[topicmap.topics]]" as="topic">
                 <template is="dom-if" if="[[topic.visibility]]">
                     <dm4-canvas-topic topic="[[topic]]" selection="[[topicmap.selection]]"></dm4-canvas-topic>
@@ -30,20 +30,11 @@
 
                 /**
                  * The displayed topicmap.
+                 * If `null`/`undefined` no topicmap is displayed.
                  */
                 topicmap: {
                     type: Object,
                     observer: "_topicmapChanged"
-                },
-
-                /**
-                 * The topicmap translation in pixel.
-                 * An object with `x` and `y` properties.
-                 */
-                translation: {
-                    type: Object,
-                    observer: "_translationChanged",
-                    notify: true
                 },
 
                 /**
@@ -68,11 +59,17 @@
                  */
                 _ctx: {
                     type: Object
+                },
+
+                _oldTranslation: {
+                    type: Object,
+                    value: {x: 0, y: 0}
                 }
             },
 
             observers: [
-                "_assocsChanged(topicmap.assocs.*)"
+                "_translationChanged(topicmap.translation)",
+                "_assocsChanged(topicmap.assocs.splices)"
             ],
 
             listeners: {
@@ -91,10 +88,12 @@
                 this._drawCanvas();
             },
 
-            _assocsChanged: function(assocs) {
-                // console.log("_assocsChanged");
+            _assocsChanged: function(changeRecord) {
+                // console.log("_assocsChanged", changeRecord);
                 this._drawCanvas();
             },
+
+
 
             // === Local DOM ===
 
@@ -104,51 +103,52 @@
                     // console.log("canvas track start");
                     break;
                 case "track":
-                    this.translation = {
-                        x: this.translation.x + e.detail.ddx,
-                        y: this.translation.y + e.detail.ddy
-                    }
-                    // this.fire("topic-moving", {topic: this.topic});
+                    this.set("topicmap.translation", {
+                        x: this.topicmap.translation.x + e.detail.ddx,
+                        y: this.topicmap.translation.y + e.detail.ddy
+                    });
                     break;
                 case "end":
                     // console.log("canvas track end");
-                    this.fire("topicmap-move", {translation: this.translation});
+                    this.fire("topicmap-move", {translation: this.topicmap.translation});
                     break;
                 }
             },
 
             _canvasSizeChanged: function(size) {
                 console.log("canvas size changed", size);
-                // Note: once its size has changed a canvas looses its translation
-                this._ctx.translate(this.translation.x, this.translation.y);
-                this._drawCanvas();
-            },
-
-            _translationChanged: function(translation, oldTranslation) {
-                // Note: at initialization the old value is undefined
-                if (oldTranslation) {
-                    var dx = translation.x - oldTranslation.x;
-                    var dy = translation.y - oldTranslation.y;
-                    // console.log("canvas translation changed", translation, "-->", dx, dy);
-                    this._ctx.translate(dx, dy);
+                if (this.topicmap) {
+                    // Note: once its size has changed a canvas looses its translation
+                    this._ctx.translate(this.topicmap.translation.x, this.topicmap.translation.y);
                     this._drawCanvas();
                 }
+            },
+
+            _translationChanged: function(translation) {
+                var dx = translation.x - this._oldTranslation.x;
+                var dy = translation.y - this._oldTranslation.y;
+                // console.log("canvas translation changed", translation, "-->", dx, dy);
+                this._ctx.translate(dx, dy);
+                this._drawCanvas();
+                //
+                this._oldTranslation = translation;
             },
 
             _getTopicLayerStyle: function(translation) {
                 return "top: " + translation.y + "px; left: " + translation.x + "px;";
             },
 
+
+
             // === Canvas Drawing ===
 
             _drawCanvas: function() {
                 // at the time of the first resize event no topicmap is set
-                if (!this.topicmap) {
-                    return;
+                if (this.topicmap) {
+                    this._ctx.clearRect(-this.topicmap.translation.x, -this.topicmap.translation.y,
+                        this.size.width, this.size.height);
+                    this._drawAssociations();
                 }
-                //
-                this._ctx.clearRect(-this.translation.x, -this.translation.y, this.size.width, this.size.height);
-                this._drawAssociations();
             },
 
             _drawAssociations: function() {

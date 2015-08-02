@@ -16,7 +16,7 @@
     </style>
 
     <template>
-        <dm4-canvas-renderer topicmap="[[topicmap]]" translation="{{translation}}" size="[[size]]" dm4="[[dm4]]">
+        <dm4-canvas-renderer topicmap="[[topicmap]]" size="[[size]]" dm4="[[dm4]]">
         </dm4-canvas-renderer>
         <dm4-context-menu id="menu"></dm4-context-menu>
     </template>
@@ -31,17 +31,7 @@
                  * The displayed topicmap.
                  */
                 topicmap: {
-                    type: Object,
-                    observer: "_topicmapChanged"
-                },
-
-                /**
-                 * The topicmap translation in pixel.
-                 * An object with `x` and `y` properties.
-                 */
-                translation: {
-                    type: Object,
-                    value: {x: 0, y: 0}
+                    type: Object
                 },
 
                 /**
@@ -78,28 +68,24 @@
             // ---------------------------------------------------------------------------------------------- Public API
 
             showTopic: function(topic, select) {
-                var i = this.topicmap.getTopicIndex(topic.id);
-                if (i != -1) {
-                    var viewTopic = this.topicmap.topics[i];
+                var index = this.topicmap.getTopicIndex(topic.id);
+                if (index != -1) {
+                    var viewTopic = this.topicmap.topics[index];
                     if (viewTopic.visibility) {
                         console.log("topic", topic.id, "already visible");
                     } else {
                         console.log("topic", topic.id, "set visibility true");
-                        this.set(["topicmap.topics", i, "visibility"], true);                   // update model
-                        this.restc.setTopicVisibility(this.topicmap.info.id, topic.id, true);   // update DB
+                        this._setTopicVisibilityByIndex(index, true);                       // update model
+                        this.restc.setTopicVisibility(this.topicmap.id, topic.id, true);    // update DB
                     }
                 } else {
                     console.log("topic", topic.id, "add to topicmap");
-                    // update model
                     var viewTopic = new DM4.ViewTopic(topic);
-                    viewTopic.viewProps = {
-                        "dm4.topicmaps.x": Math.floor(this.size.width  * Math.random() - this.translation.x),
-                        "dm4.topicmaps.y": Math.floor(this.size.height * Math.random() - this.translation.y),
-                        "dm4.topicmaps.visibility": true
-                    };
-                    this.push("topicmap.topics", viewTopic);
-                    // update DB
-                    this.restc.addTopicToTopicmap(this.topicmap.info.id, topic.id, viewTopic.viewProps);
+                    viewTopic.pos = this._randomPos();
+                    viewTopic.visibility = true;
+                    //
+                    this.push("topicmap.topics", viewTopic);                                        // update model
+                    this.restc.addTopicToTopicmap(this.topicmap.id, topic.id, viewTopic.viewProps); // update DB
                 }
                 //
                 if (select) {
@@ -113,8 +99,8 @@
                     console.log("assoc", assoc.id, "already visible");
                 } else {
                     console.log("assoc", assoc.id, "add to topicmap");
-                    this.push("topicmap.assocs", new DM4.ViewAssociation(assoc));           // update model
-                    this.restc.addAssociationToTopicmap(this.topicmap.info.id, assoc.id);   // update DB
+                    this.push("topicmap.assocs", new DM4.ViewAssociation(assoc));       // update model
+                    this.restc.addAssociationToTopicmap(this.topicmap.id, assoc.id);    // update DB
                 }
             },
 
@@ -143,13 +129,11 @@
 
             // --------------------------------------------------------------------------------------------- Private API
 
-
-
-            // === Observer ===
-
-            _topicmapChanged: function(topicmap) {
-                this.translation = this._getTranslation(topicmap);
-                // console.log("_topicmapChanged: setting up canvas translation", this._translation);
+            _randomPos: function() {
+                return {
+                    x: Math.floor(this.size.width  * Math.random() - this.topicmap.translation.x),
+                    y: Math.floor(this.size.height * Math.random() - this.topicmap.translation.y)
+                }
             },
 
 
@@ -158,17 +142,14 @@
 
             _storeTopicPosition: function(e) {
                 var topic = e.detail.topic;
-                var viewProps = topic.viewProps;
                 // console.log("_storeTopicPosition", topic);
-                this.restc.setTopicPosition(this.topicmap.info.id, topic.id, viewProps["dm4.topicmaps.x"],
-                                                                             viewProps["dm4.topicmaps.y"]);
+                this.restc.setTopicPosition(this.topicmap.id, topic.id, topic.pos.x, topic.pos.y);
             },
 
             _storeTopicmapPosition: function(e) {
                 var translation = e.detail.translation;
-                // console.log("_storeTopicmapPosition", translation, this.translation);
-                this._setTranslation(this.topicmap, translation);                                       // update model
-                this.restc.setTopicmapTranslation(this.topicmap.info.id, translation.x, translation.y); // update DB
+                // console.log("_storeTopicmapPosition", translation);
+                this.restc.setTopicmapTranslation(this.topicmap.id, translation.x, translation.y);
             },
 
             _showTopicContextMenu: function(e) {
@@ -194,13 +175,13 @@
                 console.log("hiding topic", topic.id);
                 // remove assocs
                 this.topicmap.getTopicAssociations(topic.id).forEach(function(assoc) {
-                    this._removeAssociationFromTopicmap(assoc);                                 // update model
-                    this.restc.removeAssociationFromTopicmap(this.topicmap.info.id, assoc.id);  // update DB
+                    this._removeAssociationFromTopicmap(assoc);                             // update model
+                    this.restc.removeAssociationFromTopicmap(this.topicmap.id, assoc.id);   // update DB
                 }, this);
                 // hide topic
-                this._setTopicVisibility(topic, false);                                         // update model
-                this._removeTopicFromSelection(topic.id);                                       // update model
-                this.restc.setTopicVisibility(this.topicmap.info.id, topic.id, false);          // update DB
+                this._setTopicVisibility(topic, false);                                     // update model
+                this._removeTopicFromSelection(topic.id);                                   // update model
+                this.restc.setTopicVisibility(this.topicmap.id, topic.id, false);           // update DB
             },
 
             _deleteTopic: function(topic) {
@@ -211,26 +192,16 @@
 
             // === Modell Access ===
 
-            _getTranslation: function(topicmap) {
-                var _translation = topicmap.info.childs["dm4.topicmaps.state"].childs["dm4.topicmaps.translation"];
-                return {
-                    x: _translation.childs["dm4.topicmaps.translation_x"].value,
-                    y: _translation.childs["dm4.topicmaps.translation_y"].value
-                }
+            _setTopicVisibility: function(topic, visibility) {
+                var index = this.topicmap.getTopicIndex(topic.id);
+                this._setTopicVisibilityByIndex(index, visibility);
             },
 
-            _setTranslation: function(topicmap, translation) {
-                var _translation = topicmap.info.childs["dm4.topicmaps.state"].childs["dm4.topicmaps.translation"];
-                _translation.childs["dm4.topicmaps.translation_x"].value = translation.x;
-                _translation.childs["dm4.topicmaps.translation_y"].value = translation.y;
+            _setTopicVisibilityByIndex: function(index, visibility) {
+                this.set(["topicmap.topics", index, "visibility"], visibility);
             },
 
             // ---
-
-            _setTopicVisibility: function(topic, visibility) {
-                var i = this.topicmap.getTopicIndex(topic.id);
-                this.set(["topicmap.topics", i, "visibility"], visibility);
-            },
 
             _removeAssociationFromTopicmap: function(assoc) {
                 var removed = this.arrayDelete("topicmap.assocs", assoc);

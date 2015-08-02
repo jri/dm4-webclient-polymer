@@ -112,10 +112,8 @@
                     console.log("assoc", assoc.id, "already visible");
                 } else {
                     console.log("assoc", assoc.id, "add to topicmap");
-                    // update model
-                    this.push("topicmap.assocs", new DM4.ViewAssociation(assoc));
-                    // update DB
-                    this.restc.addAssociationToTopicmap(this.topicmap.info.id, assoc.id);
+                    this.push("topicmap.assocs", new DM4.ViewAssociation(assoc));           // update model
+                    this.restc.addAssociationToTopicmap(this.topicmap.info.id, assoc.id);   // update DB
                 }
             },
 
@@ -155,21 +153,35 @@
 
             _showTopicContextMenu: function(e) {
                 var topic = e.detail.topic;
-                this.$.menu.removeAll()
-                    .addItem({label: "Hide", handler: function() {
-                        console.log("hiding topic", topic);
-                    }})
-                    .addItem({label: "Delete", handler: function() {
-                        console.log("deleting topic", topic);
-                    }})
+                this.$.menu.init(topic)
+                    .addItem({label: "Hide",   handler: this._hideTopic})
+                    .addItem({label: "Delete", handler: this._deleteTopic})
                     .show(this, e.detail.x, e.detail.y);
             },
 
             _panelResized: function(e) {
                 this.size = {
-                    width: this.clientWidth,
+                    width:  this.clientWidth,
                     height: this.clientHeight
                 }
+            },
+
+            // === Command Handler ===
+
+            _hideTopic: function(topic) {
+                console.log("hiding topic", topic, this);
+                // remove assocs
+                this.topicmap.getTopicAssociations(topic.id).forEach(function(assoc) {
+                    this._removeAssociationFromTopicmap(assoc);                                 // update model
+                    this.restc.removeAssociationFromTopicmap(this.topicmap.info.id, assoc.id);  // update DB
+                }, this);
+                // hide topic
+                this._setTopicVisibility(topic, false);                                         // update model
+                this.restc.setTopicVisibility(this.topicmap.info.id, topic.id, false);          // update DB
+            },
+
+            _deleteTopic: function(topicId) {
+                console.log("deleting topic", topicId);
             },
 
             // === Modell Access ===
@@ -186,6 +198,18 @@
                 var _translation = topicmap.info.childs["dm4.topicmaps.state"].childs["dm4.topicmaps.translation"];
                 _translation.childs["dm4.topicmaps.translation_x"].value = translation.x;
                 _translation.childs["dm4.topicmaps.translation_y"].value = translation.y;
+            },
+
+            // ---
+
+            _setTopicVisibility: function(topic, visibility) {
+                var i = this.topicmap.getTopicIndex(topic.id);
+                this.set(["topicmap.topics", i, "visibility"], visibility);
+            },
+
+            _removeAssociationFromTopicmap: function(assoc) {
+                var removed = this.arrayDelete("topicmap.assocs", assoc);
+                console.log("_removeAssociationFromTopicmap", removed);
             }
         });
     </script>

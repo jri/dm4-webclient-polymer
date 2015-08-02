@@ -122,6 +122,9 @@
         }
         return match1 ? this.role1 : match2 ? this.role2 : undefined;
     }
+    DM4.Association.prototype.isPlayerTopic = function(topicId) {
+        return this.role1.topic_id == topicId || this.role2.topic_id == topicId;
+    }
 
     DM4.Type.prototype = {
 
@@ -167,6 +170,15 @@
             return -1;
         },
 
+        getAssociationIndex: function(assocId) {
+            for (var i = 0, assoc; assoc = this.assocs[i]; i++) {
+                if (assoc.id == assocId) {
+                    return i;
+                }
+            }
+            return -1;
+        },
+
         // ---
 
         getTopic: function(id) {
@@ -177,11 +189,18 @@
         },
 
         getAssociation: function(id) {
-            for (var i = 0, assoc; assoc = this.assocs[i]; i++) {
-                if (assoc.id == id) {
-                    return assoc;
-                }
+            var i = this.getAssociationIndex(id);
+            if (i != -1) {
+                return this.assocs[i];
             }
+        },
+
+        // ---
+
+        getTopicAssociations: function(topicId) {
+            return this.assocs.filter(function(assoc) {
+                return assoc.isPlayerTopic(topicId);
+            });
         }
     }
 

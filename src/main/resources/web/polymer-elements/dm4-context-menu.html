@@ -12,7 +12,7 @@
     </style>
 
     <template>
-        <paper-menu on-iron-select="_invokeHandler">
+        <paper-menu on-iron-select="_callHandler">
             <template is="dom-repeat" items="[[items]]">
                 <paper-item>[[item.label]]</paper-item>
             </template>
@@ -24,19 +24,41 @@
             is: "dm4-context-menu",
 
             properties: {
+
                 items: {
                     type: Array,
                     value: function() {
                         return [];
                     }
+                },
+
+                /**
+                 * The context object the menu items apply to.
+                 */
+                _context: {
+                    type: Object
+                },
+
+                /**
+                 * The element that hosts this context menu.
+                 */
+                _parent: {
+                    type: Object
                 }
             },
 
             behaviors: [
-              Polymer.IronOverlayBehavior
+                Polymer.IronOverlayBehavior
             ],
 
             // ---------------------------------------------------------------------------------------------- Public API
+
+            init: function(context) {
+                this._context = context;
+                this.items = [];
+                // this.splice("items", 0, this.items.length);  // does not work
+                return this;
+            },
 
             /**
              * @param   item    an object with `label` and `handler` properties.
@@ -46,13 +68,8 @@
                 return this;
             },
 
-            removeAll: function() {
-                // this.splice("items", 0, this.items.length);  // does not work
-                this.items = [];
-                return this;
-            },
-
             show: function(parent, x, y) {
+                this._parent = parent;
                 var rect = parent.getBoundingClientRect();
                 this.style.left = x - rect.left + "px";
                 this.style.top  = y - rect.top  + "px";
@@ -61,10 +78,10 @@
 
             // --------------------------------------------------------------------------------------------- Private API
 
-            _invokeHandler: function(e) {
+            _callHandler: function(e) {
                 this.close();
                 var item = e.detail.item.dataHost.item;
-                item.handler();
+                item.handler.call(this._parent, this._context);
             }
         });
     </script>

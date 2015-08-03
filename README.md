@@ -45,6 +45,14 @@ Use
 Version History
 ---------------
 
+**0.2** -- Aug 3, 2015
+
+* Show related topics, reveal related topics
+* Hide topics
+* Topicmap panel: type icons, association colors
+* Technical: REST client and context menu components
+* Compatible with DeepaMehta 4.6
+
 **0.1** -- Jul 4, 2015
 
 * Create topics, edit topics, move topics
@@ -57,4 +65,4 @@ Version History
 
 ------------
 Jörg Richter  
-Jul 4, 2015
+Aug 3, 2015

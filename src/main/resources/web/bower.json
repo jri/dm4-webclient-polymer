@@ -1,6 +1,6 @@
 {
   "name": "dm4-webclient-polymer",
-  "version": "0.2-SNAPSHOT",
+  "version": "0.2",
   "homepage": "https://github.com/jri/dm4-webclient-polymer",
   "authors": [
     "Jörg Richter <jri@deepamehta.de>"
